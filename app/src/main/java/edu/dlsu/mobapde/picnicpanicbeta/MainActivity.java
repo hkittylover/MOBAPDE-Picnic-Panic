@@ -1,4 +1,4 @@
-package com.example.krizialynn.myapplication;
+package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
