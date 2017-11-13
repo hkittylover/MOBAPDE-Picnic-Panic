@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -41,14 +42,26 @@ public class GameLayout extends SurfaceView implements Runnable {
     int[] imgIds;
     int score = 0;
     int multiplier = 1;
+    int imgWidth;
+    int imgHeight;
+    int numCol = 3;
 
     public GameLayout(Context context, int height, int width) {
         super(context);
         surfaceHolder = getHolder();
+        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
         background = BitmapFactory.decodeResource(getResources(), R.drawable.trees);
-        catcher = new Catcher(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.soup), 200, 200, false), (width/3) + (width/3 - 200)/2, height - 300, width - ((width/3) + (width/3 - 200)/2) - 200 - 10, (width - ((width/3) + (width/3 - 200)/2) - 200 - 10)/5);
+
+        // the image width and height will be 20% of the screen width
+        imgWidth = screenWidth * 20 / 100;
+        imgHeight = imgWidth;
+
+        Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.soup), imgWidth, imgHeight, false);
+        catcher = new Catcher(catcherBitmap, (width/numCol) + (width/numCol - imgWidth)/2, height - imgHeight - screenHeight * 5 / 100, width/numCol, (width/numCol)/5);
+
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
         imgIds = new int[] {
                 R.drawable.bamboo,
@@ -101,8 +114,6 @@ public class GameLayout extends SurfaceView implements Runnable {
         };
 
         fallingObjects = new ArrayList<FallingObject>();
-        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
     @Override
@@ -121,8 +132,8 @@ public class GameLayout extends SurfaceView implements Runnable {
 
                 // Create falling object
                 Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), 200, 200, false);
-                FallingObject f = new FallingObject(fall, colPositions[Math.abs(r.nextInt() % 3)], 10);
+                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
+                FallingObject f = new FallingObject(fall, colPositions[Math.abs(r.nextInt() % 3)], -imgHeight);
                 f.move_object(screenHeight + 1);
 
                 // Add falling object to
@@ -139,11 +150,18 @@ public class GameLayout extends SurfaceView implements Runnable {
                 canvas.drawBitmap(f.getImage(), f.getX_pos_curr(), f.getY_pos_curr(), null);
 
                 // remove falling object from array
-                if(f.getY_pos_curr() >= catcher.getyPos() - 30) {
-                    if (f.getX_pos_curr() == catcher.getxPos()) {
+                // as long as the falling object touches the catcher, it is considered as 1 pt
+                if (f.getX_pos_curr() == catcher.getxPos()) {
+                    if(f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
                         score += multiplier * 1;
+                        iterator.remove();
                     }
-                    iterator.remove();
+                }
+                // if the falling object did not touch the catcher, it will just fall to the end of the screen
+                else {
+                    if(f.getY_pos_curr() >= screenHeight) {
+                        iterator.remove();
+                    }
                 }
             }
 
