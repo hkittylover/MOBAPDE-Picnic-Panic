@@ -48,7 +48,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         background = BitmapFactory.decodeResource(getResources(), R.drawable.trees);
         catcher = new Catcher(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.soup), 200, 200, false), (width/3) + (width/3 - 200)/2, height - 300, width - ((width/3) + (width/3 - 200)/2) - 200 - 10, 70);
+                R.drawable.soup), 200, 200, false), (width/3) + (width/3 - 200)/2, height - 300, width - ((width/3) + (width/3 - 200)/2) - 200 - 10, (width - ((width/3) + (width/3 - 200)/2) - 200 - 10)/5);
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
         imgIds = new int[] {
                 R.drawable.bamboo,
@@ -140,7 +140,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
                 // remove falling object from array
                 if(f.getY_pos_curr() >= catcher.getyPos() - 30) {
-                    if (f.getX_pos_curr() == catcher.getxPosCurr()) {
+                    if (f.getX_pos_curr() == catcher.getxPos()) {
                         score += multiplier * 1;
                     }
                     iterator.remove();
@@ -156,7 +156,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(75);
-            canvas.drawText(Integer.toString(score), 325, 100, paint);
+            canvas.drawText(Integer.toString(score), canvas.getWidth()/2 - 20, 100, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
