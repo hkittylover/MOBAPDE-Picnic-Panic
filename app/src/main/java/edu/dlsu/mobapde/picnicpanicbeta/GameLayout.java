@@ -60,10 +60,10 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.soup), imgWidth, imgHeight, false);
-        catcher = new Catcher(catcherBitmap, (width/numCol) + (width/numCol - imgWidth)/2, height - imgHeight - screenHeight * 5 / 100, width/numCol, (width/numCol)/5);
+        catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 3);
 
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
-        imgIds = new int[] {
+        imgIds = new int[]{
                 R.drawable.bamboo,
                 R.drawable.biwa,
                 R.drawable.cherry_blossom,
@@ -118,48 +118,53 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
-
-        while(canDraw) {
-            if(!surfaceHolder.getSurface().isValid()) {
+        int minY = screenHeight;
+        int speed = 15;
+        while (canDraw) {
+            if (!surfaceHolder.getSurface().isValid()) {
                 continue;
             }
             canvas = surfaceHolder.lockCanvas();
 
-            // Create falling object (chance: 1 / 15)
+            // Create falling object (chance: 1 / 8)
             Random r = new Random();
-            if(r.nextInt() % 15 == 2) {
+            if (minY >= 0 && r.nextInt() % 20 == 0) {
                 int num = r.nextInt();
 
                 // Create falling object
                 Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                         imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
-                FallingObject f = new FallingObject(fall, colPositions[Math.abs(r.nextInt() % 3)], -imgHeight);
+                FallingObject f = new FallingObject(fall, colPositions[Math.abs(num % 3)], -imgHeight);
                 f.move_object(screenHeight + 1);
 
                 // Add falling object to
                 fallingObjects.add(f);
             }
-
+            minY = screenHeight;
             canvas.drawBitmap(background, 0, 0, null);
 
             // move falling objects
             Iterator<FallingObject> iterator = fallingObjects.iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 FallingObject f = iterator.next();
-                f.motion_object(20);
-                canvas.drawBitmap(f.getImage(), f.getX_pos_curr(), f.getY_pos_curr(), null);
 
+                f.motion_object(speed);
+                canvas.drawBitmap(f.getImage(), f.getX_pos_curr(), f.getY_pos_curr(), null);
+                minY = Math.min(minY, f.getY_pos_curr());
                 // remove falling object from array
                 // as long as the falling object touches the catcher, it is considered as 1 pt
-                if (f.getX_pos_curr() == catcher.getxPos()) {
-                    if(f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
+
+                if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
+                    if (f.getX_pos_curr() == catcher.getxPos()) {
                         score += multiplier * 1;
+                        if (score % 20 == 0)
+                            speed++;
                         iterator.remove();
+                        // TODO implement check if bomb or not
+                        // if bomb, notify user
                     }
-                }
-                // if the falling object did not touch the catcher, it will just fall to the end of the screen
-                else {
-                    if(f.getY_pos_curr() >= screenHeight) {
+                    // if the falling object did not touch the catcher, it will just fall to the end of the screen
+                    else if (f.getY_pos_curr() >= screenHeight) {
                         iterator.remove();
                     }
                 }
@@ -174,7 +179,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(75);
-            canvas.drawText(Integer.toString(score), canvas.getWidth()/2 - 20, 100, paint);
+            canvas.drawText(Integer.toString(score), canvas.getWidth() / 2 - 20, 100, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
@@ -184,7 +189,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         canDraw = false;
 
-        while(true) {
+        while (true) {
             try {
                 thread.join();
                 break;
@@ -208,7 +213,6 @@ public class GameLayout extends SurfaceView implements Runnable {
     public Catcher getCatcher() {
         return catcher;
     }
-
 
 
 }
