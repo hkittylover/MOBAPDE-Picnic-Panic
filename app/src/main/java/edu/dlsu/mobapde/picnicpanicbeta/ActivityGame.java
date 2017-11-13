@@ -2,6 +2,7 @@ package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,8 +21,12 @@ public class ActivityGame extends Activity {
     protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
 
-        gameLayout = new GameLayout(this);
+        gameLayout = new GameLayout(this, height, width);
         setContentView(gameLayout);
 
         gestureDetector = new GestureDetector(this, new GestureListenerHuhu());

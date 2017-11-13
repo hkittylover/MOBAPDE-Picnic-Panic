@@ -5,6 +5,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -30,19 +33,22 @@ public class GameLayout extends SurfaceView implements Runnable {
     Bitmap background;
     Canvas canvas;
     SurfaceHolder surfaceHolder;
+    Paint paint;
 
     // values
     int screenWidth, screenHeight;
     int[] colPositions;
     int[] imgIds;
+    int score = 0;
+    int multiplier = 1;
 
-    public GameLayout(Context context) {
+    public GameLayout(Context context, int height, int width) {
         super(context);
         surfaceHolder = getHolder();
 
         background = BitmapFactory.decodeResource(getResources(), R.drawable.trees);
         catcher = new Catcher(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.soup), 250, 250, false), 400, 1400, 350, 70);
+                R.drawable.soup), 200, 200, false), (width/3) + (width/3 - 200)/2, height - 300, width - ((width/3) + (width/3 - 200)/2) - 200 - 10, 70);
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
         imgIds = new int[] {
                 R.drawable.bamboo,
@@ -115,7 +121,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
                 // Create falling object
                 Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), 250, 250, false);
+                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), 200, 200, false);
                 FallingObject f = new FallingObject(fall, colPositions[Math.abs(r.nextInt() % 3)], 10);
                 f.move_object(screenHeight + 1);
 
@@ -133,7 +139,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                 canvas.drawBitmap(f.getImage(), f.getX_pos_curr(), f.getY_pos_curr(), null);
 
                 // remove falling object from array
-                if(f.getY_pos_curr() >= catcher.getyPos()) {
+                if(f.getY_pos_curr() >= catcher.getyPos() - 30) {
+                    if (f.getX_pos_curr() == catcher.getxPosCurr()) {
+                        score += multiplier * 1;
+                    }
                     iterator.remove();
                 }
             }
@@ -141,6 +150,13 @@ public class GameLayout extends SurfaceView implements Runnable {
             // move bowl
             catcher.motionCatcher();
             canvas.drawBitmap(catcher.getImg(), catcher.getxPosCurr(), catcher.getyPosCurr(), null);
+
+            // update score;
+            paint = new Paint();
+
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(75);
+            canvas.drawText(Integer.toString(score), 325, 100, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
