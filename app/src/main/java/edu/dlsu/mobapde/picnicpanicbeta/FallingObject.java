@@ -1,7 +1,6 @@
-package com.example.allyza.animationexample;
+package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 /**
  * Created by Allyza on 13/11/2017.

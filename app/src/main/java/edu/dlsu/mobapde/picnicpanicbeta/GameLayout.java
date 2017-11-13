@@ -1,4 +1,4 @@
-package com.example.allyza.animationexample;
+package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.content.Context;
 import android.content.res.Resources;
