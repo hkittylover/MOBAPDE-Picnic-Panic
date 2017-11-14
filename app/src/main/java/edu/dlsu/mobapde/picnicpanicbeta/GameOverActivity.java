@@ -2,6 +2,7 @@ package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -62,5 +63,9 @@ public class GameOverActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/unica_one.ttf");
+        buttonHome.setTypeface(typeface);
+        buttonNewGame.setTypeface(typeface);
     }
 }
