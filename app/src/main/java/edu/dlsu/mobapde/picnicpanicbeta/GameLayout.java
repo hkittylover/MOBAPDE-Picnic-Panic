@@ -42,6 +42,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     Bitmap background;
     Rect rectOverlay;
     Paint paintOverlay;
+    Bitmap life;
     Canvas canvas;
     SurfaceHolder surfaceHolder;
     Paint paint;
@@ -51,6 +52,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     int[] colPositions;
     ArrayList<Integer> imgIds;
     int score = 0;
+    int scoreMargin = 0;
+    int lives = 5;
     int multiplier = 1;
     int imgWidth;
     int imgHeight;
@@ -70,7 +73,11 @@ public class GameLayout extends SurfaceView implements Runnable {
         paintOverlay = new Paint();
         paintOverlay.setColor(Color.BLACK);
         paintOverlay.setStyle(Paint.Style.FILL);
-        paintOverlay.setAlpha(50);
+        paintOverlay.setAlpha(60);
+//         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
+
+//         // scales background and crops from bottom to top
+//         background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
 
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 20 / 100;
@@ -80,6 +87,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                 R.drawable.catcher_basket), imgWidth, imgHeight, false);
         catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 3);
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
+
+
+        life = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.heart), 75, 75, false);
 
         // get all food resources
         imgIds = new ArrayList<Integer>();
@@ -148,6 +159,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                 if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
                     if (f.getX_pos_curr() == catcher.getxPos()) {
                         score += multiplier * 1;
+                        scoreMargin = (Integer.toString(score).length() - 1) * 45;
                         if (score % 20 == 0)
                             speed++;
                         iterator.remove();
@@ -161,6 +173,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
                     else if (f.getY_pos_curr() >= screenHeight) {
                         iterator.remove();
+                        lives--;
                     }
                 }
             }
@@ -174,7 +187,12 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(75);
-            canvas.drawText(Integer.toString(score), canvas.getWidth() / 2 - 20, 100, paint);
+            canvas.drawText(Integer.toString(score), canvas.getWidth() - 70 - scoreMargin, 85, paint);
+
+            // draw hearts
+            for (int i = 0; i < lives; i++) {
+                canvas.drawBitmap(life, 20 + i*90, 20, null);
+            }
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
