@@ -7,11 +7,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,10 +33,15 @@ public class GameLayout extends SurfaceView implements Runnable {
     // falling objects
     List<FallingObject> fallingObjects;
 
+    // Sfx
+    MediaPlayer sfx_collected;
+
     // Important stuff
     Thread thread = null;
     boolean canDraw = false;
     Bitmap background;
+    Rect rectOverlay;
+    Paint paintOverlay;
     Canvas canvas;
     SurfaceHolder surfaceHolder;
     Paint paint;
@@ -39,7 +49,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     // values
     int screenWidth, screenHeight;
     int[] colPositions;
-    int[] imgIds;
+    ArrayList<Integer> imgIds;
     int score = 0;
     int multiplier = 1;
     int imgWidth;
@@ -52,67 +62,41 @@ public class GameLayout extends SurfaceView implements Runnable {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-        background = BitmapFactory.decodeResource(getResources(), R.drawable.trees);
+        // background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test);
+        background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.background_test_1), screenWidth, screenHeight, false);
+        rectOverlay= new Rect();
+        rectOverlay.set(0, 0, screenWidth, screenHeight);
+        paintOverlay = new Paint();
+        paintOverlay.setColor(Color.BLACK);
+        paintOverlay.setStyle(Paint.Style.FILL);
+        paintOverlay.setAlpha(50);
 
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 20 / 100;
         imgHeight = imgWidth;
 
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.soup), imgWidth, imgHeight, false);
+                R.drawable.catcher_basket), imgWidth, imgHeight, false);
         catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 3);
-
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
-        imgIds = new int[]{
-                R.drawable.bamboo,
-                R.drawable.biwa,
-                R.drawable.cherry_blossom,
-                R.drawable.daruma,
-                R.drawable.dohyo,
-                R.drawable.ema,
-                R.drawable.fude,
-                R.drawable.fuji_mountain,
-                R.drawable.geisha,
-                R.drawable.geta,
-                R.drawable.hamaya,
-                R.drawable.hannya,
-                R.drawable.haori,
-                R.drawable.japan,
-                R.drawable.kamon,
-                R.drawable.kasa,
-                R.drawable.katana,
-                R.drawable.katana_1,
-                R.drawable.kimono,
-                R.drawable.kogai_and_kushi,
-                R.drawable.koinobori,
-                R.drawable.ko_omote,
-                R.drawable.lotus,
-                R.drawable.maneki_neko,
-                R.drawable.ninja,
-                R.drawable.omamori,
-                R.drawable.origami,
-                R.drawable.pagoda,
-                R.drawable.paper_lantern,
-                R.drawable.sake,
-                R.drawable.shamisen,
-                R.drawable.shamisen,
-                R.drawable.shinto,
-                R.drawable.sun,
-                R.drawable.sushi,
-                R.drawable.sushi_1,
-                R.drawable.suzuri,
-                R.drawable.taiko,
-                R.drawable.tatami,
-                R.drawable.tea,
-                R.drawable.temple,
-                R.drawable.torii,
-                R.drawable.uchiwa,
-                R.drawable.wagasa,
-                R.drawable.washi,
-                R.drawable.wind_bell,
-                R.drawable.zen_garden,
-        };
 
+        // get all food resources
+        imgIds = new ArrayList<Integer>();
+        final Field[] fields =  R.drawable.class.getDeclaredFields();
+        final R.drawable drawableResources = new R.drawable();
+        for (int i = 0; i < fields.length; i++) {
+            try {
+                if (fields[i].getName().contains("food_")) {
+                    imgIds.add(fields[i].getInt(drawableResources));
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+
+        // Initialize sounds
+        sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin);
         fallingObjects = new ArrayList<FallingObject>();
     }
 
@@ -132,8 +116,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                 int num = r.nextInt();
 
                 // Create falling object
+//                Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+//                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
                 Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
+                        imgIds.get(Math.abs(r.nextInt()) % imgIds.size())), imgWidth, imgHeight, false);
                 FallingObject f = new FallingObject(fall, colPositions[Math.abs(num % 3)], -imgHeight);
                 f.move_object(screenHeight + 1);
 
@@ -141,7 +127,12 @@ public class GameLayout extends SurfaceView implements Runnable {
                 fallingObjects.add(f);
             }
             minY = screenHeight;
+
+            // draw background
             canvas.drawBitmap(background, 0, 0, null);
+            canvas.drawRect(rectOverlay, paintOverlay);
+
+            // TODO draw column dividers
 
             // move falling objects
             Iterator<FallingObject> iterator = fallingObjects.iterator();
@@ -160,6 +151,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                         if (score % 20 == 0)
                             speed++;
                         iterator.remove();
+
+                        // play audio
+                        sfx_collected.start();
+
                         // TODO implement check if bomb or not
                         // if bomb, notify user
                     }
