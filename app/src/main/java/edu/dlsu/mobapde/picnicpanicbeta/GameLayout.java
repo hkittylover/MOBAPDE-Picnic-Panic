@@ -120,6 +120,19 @@ public class GameLayout extends SurfaceView implements Runnable {
         int minY = screenHeight;
         int speed = 15;
         while (canDraw) {
+            if(lives <= 0) {
+                MediaPlayer.create(getContext(),R.raw.lose).start();
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Intent i = new Intent();
+                i.setClass(getContext(), GameOverActivity.class);
+                i.putExtra("score", score);
+                getContext().startActivity(i);
+                ((Activity)getContext()).finish();
+            }
             if (!surfaceHolder.getSurface().isValid()) {
                 continue;
             }
@@ -187,13 +200,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                             getContext().startActivity(i);
                             ((Activity)getContext()).finish();
                         } else {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MediaPlayer.create(getContext(),R.raw.ring).start();
-                                }
-                            }).start();
-
+                            sfx_collected.start();
                             score += multiplier * 1;
                             scoreMargin = (Integer.toString(score).length() - 1) * 45;
                             if (score % 20 == 0)
@@ -202,7 +209,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                         iterator.remove();
 
                         // play audio
-                        sfx_collected.start();
+
 
                         // TODO implement check if bomb or not
                         // if bomb, notify user
@@ -231,19 +238,7 @@ public class GameLayout extends SurfaceView implements Runnable {
             for (int i = 0; i < lives; i++) {
                 canvas.drawBitmap(life, 20 + i*90, 20, null);
             }
-            if(lives <= 0) {
-                MediaPlayer.create(getContext(),R.raw.lose).start();
-                try {
-                    Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Intent i = new Intent();
-                i.setClass(getContext(), GameOverActivity.class);
-                i.putExtra("score", score);
-                getContext().startActivity(i);
-                ((Activity)getContext()).finish();
-            }
+
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
