@@ -43,7 +43,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -64,11 +65,12 @@
             android:layout_height="wrap_content"
             android:text="New Game"
             android:textSize="20dp"
-            android:background="#FAEBD7"
+            android:textColor="#fff"
+            android:background="@drawable/button_background"
             android:elevation="3dp"
             android:paddingLeft="45dp"
             android:paddingRight="45dp"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             android:layout_gravity="center"
             android:id="@+id/button_new_game"/>
         <Button
@@ -76,11 +78,12 @@
             android:layout_height="wrap_content"
             android:text="Home"
             android:textSize="20dp"
-            android:background="#FAEBD7"
+            android:textColor="#fff"
+            android:background="@drawable/button_background"
             android:elevation="3dp"
             android:paddingLeft="45dp"
             android:paddingRight="45dp"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             android:layout_gravity="center"
             android:id="@+id/button_home"/>
     </LinearLayout>
