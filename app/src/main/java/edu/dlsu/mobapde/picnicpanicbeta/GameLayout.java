@@ -7,11 +7,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,10 +33,15 @@ public class GameLayout extends SurfaceView implements Runnable {
     // falling objects
     List<FallingObject> fallingObjects;
 
+    // Sfx
+    MediaPlayer sfx_collected;
+
     // Important stuff
     Thread thread = null;
     boolean canDraw = false;
     Bitmap background;
+    Rect rectOverlay;
+    Paint paintOverlay;
     Bitmap life;
     Canvas canvas;
     SurfaceHolder surfaceHolder;
@@ -40,7 +50,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     // values
     int screenWidth, screenHeight;
     int[] colPositions;
-    int[] imgIds;
+    ArrayList<Integer> imgIds;
     int score = 0;
     int scoreMargin = 0;
     int lives = 5;
@@ -55,10 +65,19 @@ public class GameLayout extends SurfaceView implements Runnable {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-        background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
+        // background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test);
+        background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.background_test_1), screenWidth, screenHeight, false);
+        rectOverlay= new Rect();
+        rectOverlay.set(0, 0, screenWidth, screenHeight);
+        paintOverlay = new Paint();
+        paintOverlay.setColor(Color.BLACK);
+        paintOverlay.setStyle(Paint.Style.FILL);
+        paintOverlay.setAlpha(60);
+//         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
 
-        // scales background and crops from bottom to top
-        background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
+//         // scales background and crops from bottom to top
+//         background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
 
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 20 / 100;
@@ -67,97 +86,28 @@ public class GameLayout extends SurfaceView implements Runnable {
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.catcher_basket), imgWidth, imgHeight, false);
         catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 3);
+        colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
+
 
         life = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.heart), 75, 75, false);
 
-        colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
-        imgIds = new int[]{
-                R.drawable.food_apple,
-                R.drawable.food_apple_1,
-                R.drawable.food_aubergine,
-                R.drawable.food_avocado,
-                R.drawable.food_bacon,
-                R.drawable.food_baguette,
-                R.drawable.food_banana,
-                R.drawable.food_bread,
-                R.drawable.food_broccoli,
-                R.drawable.food_burger,
-                R.drawable.food_burrito,
-                R.drawable.food_cake,
-                R.drawable.food_cake_1,
-                R.drawable.food_candy,
-                R.drawable.food_canned_food,
-                R.drawable.food_carrot,
-                R.drawable.food_cheese,
-                R.drawable.food_cherry,
-                R.drawable.food_chestnut,
-                R.drawable.food_chicken,
-                R.drawable.food_chicken_leg,
-                R.drawable.food_chinese_food,
-                R.drawable.food_chocolate,
-                R.drawable.food_coconut,
-                R.drawable.food_coffee,
-                R.drawable.food_cookie,
-                R.drawable.food_corn,
-                R.drawable.food_creme_caramel,
-                R.drawable.food_croissant,
-                R.drawable.food_cucumber,
-                R.drawable.food_donuts,
-                R.drawable.food_egg,
-                R.drawable.food_food,
-                R.drawable.food_food_1,
-                R.drawable.food_fried_egg,
-                R.drawable.food_fries,
-                R.drawable.food_grapes,
-                R.drawable.food_honey,
-                R.drawable.food_hot_dog,
-                R.drawable.food_ice_cream,
-                R.drawable.food_ice_cream_1,
-                R.drawable.food_ice_cream_2,
-                R.drawable.food_kiwi,
-                R.drawable.food_lemon,
-                R.drawable.food_lollipop,
-                R.drawable.food_meat,
-                R.drawable.food_melon,
-                R.drawable.food_milk,
-                R.drawable.food_noodles,
-                R.drawable.food_nori,
-                R.drawable.food_nori_1,
-                R.drawable.food_orange,
-                R.drawable.food_pancake,
-                R.drawable.food_pasta,
-                R.drawable.food_pasty,
-                R.drawable.food_pasty_1,
-                R.drawable.food_peach,
-                R.drawable.food_peanut,
-                R.drawable.food_pear,
-                R.drawable.food_pie,
-                R.drawable.food_pineapple,
-                R.drawable.food_pizza,
-                R.drawable.food_popcorn,
-                R.drawable.food_potato,
-                R.drawable.food_pretzel,
-                R.drawable.food_radish,
-                R.drawable.food_rice,
-                R.drawable.food_rice_1,
-                R.drawable.food_salad,
-                R.drawable.food_sandwich,
-                R.drawable.food_shrimp,
-                R.drawable.food_soup,
-                R.drawable.food_soup_1,
-                R.drawable.food_steak,
-                R.drawable.food_strawberry,
-                R.drawable.food_sushi,
-                R.drawable.food_sushi_1,
-                R.drawable.food_sushi_2,
-                R.drawable.food_taco,
-                R.drawable.food_taco_1,
-                R.drawable.food_tomato,
-                R.drawable.food_water,
-                R.drawable.food_watermelon,
-        };
+        // get all food resources
+        imgIds = new ArrayList<Integer>();
+        final Field[] fields =  R.drawable.class.getDeclaredFields();
+        final R.drawable drawableResources = new R.drawable();
+        for (int i = 0; i < fields.length; i++) {
+            try {
+                if (fields[i].getName().contains("food_")) {
+                    imgIds.add(fields[i].getInt(drawableResources));
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
 
+        // Initialize sounds
+        sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin);
         fallingObjects = new ArrayList<FallingObject>();
     }
 
@@ -177,8 +127,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                 int num = r.nextInt();
 
                 // Create falling object
+//                Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+//                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
                 Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
+                        imgIds.get(Math.abs(r.nextInt()) % imgIds.size())), imgWidth, imgHeight, false);
                 FallingObject f = new FallingObject(fall, colPositions[Math.abs(num % 3)], -imgHeight);
                 f.move_object(screenHeight + 1);
 
@@ -186,7 +138,12 @@ public class GameLayout extends SurfaceView implements Runnable {
                 fallingObjects.add(f);
             }
             minY = screenHeight;
+
+            // draw background
             canvas.drawBitmap(background, 0, 0, null);
+            canvas.drawRect(rectOverlay, paintOverlay);
+
+            // TODO draw column dividers
 
             // move falling objects
             Iterator<FallingObject> iterator = fallingObjects.iterator();
@@ -206,6 +163,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                         if (score % 20 == 0)
                             speed++;
                         iterator.remove();
+
+                        // play audio
+                        sfx_collected.start();
+
                         // TODO implement check if bomb or not
                         // if bomb, notify user
                     }
