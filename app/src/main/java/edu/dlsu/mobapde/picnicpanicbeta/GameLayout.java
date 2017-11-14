@@ -1,12 +1,15 @@
 package edu.dlsu.mobapde.picnicpanicbeta;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -85,7 +88,8 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.catcher_basket), imgWidth, imgHeight, false);
-        catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 3);
+
+        catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 2);
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
 
 
@@ -123,19 +127,30 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             // Create falling object (chance: 1 / 8)
             Random r = new Random();
-            if (minY >= 0 && r.nextInt() % 20 == 0) {
-                int num = r.nextInt();
+            if (minY >= 0) {
+                if (r.nextInt() % 20 == 0) {
+                    int num = r.nextInt();
 
-                // Create falling object
-//                Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-//                        imgIds[Math.abs(r.nextInt()) % imgIds.length]), imgWidth, imgHeight, false);
-                Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                    // Create falling object
+                    Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                         imgIds.get(Math.abs(r.nextInt()) % imgIds.size())), imgWidth, imgHeight, false);
-                FallingObject f = new FallingObject(fall, colPositions[Math.abs(num % 3)], -imgHeight);
-                f.move_object(screenHeight + 1);
+                    FallingObject f = new FallingObject(fall, colPositions[Math.abs(num % 3)], -imgHeight);
+                    f.move_object(screenHeight + 1);
 
-                // Add falling object to
-                fallingObjects.add(f);
+                    // Add falling object to
+                    fallingObjects.add(f);
+                } else if(r.nextInt() % 200 == 0) {
+                    int num = r.nextInt();
+
+                    // Create falling object
+                    Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                            R.drawable.bomb), imgWidth, imgHeight, false);
+                    FallingObject f = new Bomb(fall, colPositions[Math.abs(num % 3)], -imgHeight);
+                    f.move_object(screenHeight + 1);
+
+                    // Add falling object to
+                    fallingObjects.add(f);
+                }
             }
             minY = screenHeight;
 
@@ -156,12 +171,34 @@ public class GameLayout extends SurfaceView implements Runnable {
                 // remove falling object from array
                 // as long as the falling object touches the catcher, it is considered as 1 pt
 
+
                 if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
                     if (f.getX_pos_curr() == catcher.getxPos()) {
-                        score += multiplier * 1;
-                        scoreMargin = (Integer.toString(score).length() - 1) * 45;
-                        if (score % 20 == 0)
-                            speed++;
+                        if(f instanceof Bomb) {
+                            MediaPlayer.create(getContext(),R.raw.lose).start();
+                            try {
+                                Thread.sleep(4000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            Intent i = new Intent();
+                            i.setClass(getContext(), GameOverActivity.class);
+                            i.putExtra("score", score);
+                            getContext().startActivity(i);
+                            ((Activity)getContext()).finish();
+                        } else {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MediaPlayer.create(getContext(),R.raw.ring).start();
+                                }
+                            }).start();
+
+                            score += multiplier * 1;
+                            scoreMargin = (Integer.toString(score).length() - 1) * 45;
+                            if (score % 20 == 0)
+                                speed++;
+                        }
                         iterator.remove();
 
                         // play audio
@@ -174,6 +211,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     else if (f.getY_pos_curr() >= screenHeight) {
                         iterator.remove();
                         lives--;
+
                     }
                 }
             }
@@ -192,6 +230,19 @@ public class GameLayout extends SurfaceView implements Runnable {
             // draw hearts
             for (int i = 0; i < lives; i++) {
                 canvas.drawBitmap(life, 20 + i*90, 20, null);
+            }
+            if(lives <= 0) {
+                MediaPlayer.create(getContext(),R.raw.lose).start();
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Intent i = new Intent();
+                i.setClass(getContext(), GameOverActivity.class);
+                i.putExtra("score", score);
+                getContext().startActivity(i);
+                ((Activity)getContext()).finish();
             }
 
             surfaceHolder.unlockCanvasAndPost(canvas);

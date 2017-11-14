@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//
+
         buttonStart = (Button) findViewById(R.id.button_start);
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/unica_one.ttf");
         buttonStart.setTypeface(typeface);
@@ -25,16 +25,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
                 Intent i = new Intent();
                 i.setClass(getBaseContext(), ActivityGame.class);
 
                 startActivity(i);
+
+                finish();
             }
         });
-//        Intent i = new Intent();
-//        i.setClass(getBaseContext(), ActivityGame.class);
-//
-//        startActivity(i);
-//        finish();
+
+
     }
 }
