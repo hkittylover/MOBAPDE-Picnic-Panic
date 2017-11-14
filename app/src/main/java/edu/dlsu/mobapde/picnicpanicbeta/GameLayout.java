@@ -32,6 +32,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     Thread thread = null;
     boolean canDraw = false;
     Bitmap background;
+    Bitmap life;
     Canvas canvas;
     SurfaceHolder surfaceHolder;
     Paint paint;
@@ -41,6 +42,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     int[] colPositions;
     int[] imgIds;
     int score = 0;
+    int scoreMargin = 0;
+    int lives = 5;
     int multiplier = 1;
     int imgWidth;
     int imgHeight;
@@ -52,65 +55,107 @@ public class GameLayout extends SurfaceView implements Runnable {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-        background = BitmapFactory.decodeResource(getResources(), R.drawable.trees);
+        background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
+
+        // scales background and crops from bottom to top
+        background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
 
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 20 / 100;
         imgHeight = imgWidth;
 
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.soup), imgWidth, imgHeight, false);
+                R.drawable.catcher_basket), imgWidth, imgHeight, false);
         catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 3);
+
+        life = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.heart), 75, 75, false);
 
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
         imgIds = new int[]{
-                R.drawable.bamboo,
-                R.drawable.biwa,
-                R.drawable.cherry_blossom,
-                R.drawable.daruma,
-                R.drawable.dohyo,
-                R.drawable.ema,
-                R.drawable.fude,
-                R.drawable.fuji_mountain,
-                R.drawable.geisha,
-                R.drawable.geta,
-                R.drawable.hamaya,
-                R.drawable.hannya,
-                R.drawable.haori,
-                R.drawable.japan,
-                R.drawable.kamon,
-                R.drawable.kasa,
-                R.drawable.katana,
-                R.drawable.katana_1,
-                R.drawable.kimono,
-                R.drawable.kogai_and_kushi,
-                R.drawable.koinobori,
-                R.drawable.ko_omote,
-                R.drawable.lotus,
-                R.drawable.maneki_neko,
-                R.drawable.ninja,
-                R.drawable.omamori,
-                R.drawable.origami,
-                R.drawable.pagoda,
-                R.drawable.paper_lantern,
-                R.drawable.sake,
-                R.drawable.shamisen,
-                R.drawable.shamisen,
-                R.drawable.shinto,
-                R.drawable.sun,
-                R.drawable.sushi,
-                R.drawable.sushi_1,
-                R.drawable.suzuri,
-                R.drawable.taiko,
-                R.drawable.tatami,
-                R.drawable.tea,
-                R.drawable.temple,
-                R.drawable.torii,
-                R.drawable.uchiwa,
-                R.drawable.wagasa,
-                R.drawable.washi,
-                R.drawable.wind_bell,
-                R.drawable.zen_garden,
+                R.drawable.food_apple,
+                R.drawable.food_apple_1,
+                R.drawable.food_aubergine,
+                R.drawable.food_avocado,
+                R.drawable.food_bacon,
+                R.drawable.food_baguette,
+                R.drawable.food_banana,
+                R.drawable.food_bread,
+                R.drawable.food_broccoli,
+                R.drawable.food_burger,
+                R.drawable.food_burrito,
+                R.drawable.food_cake,
+                R.drawable.food_cake_1,
+                R.drawable.food_candy,
+                R.drawable.food_canned_food,
+                R.drawable.food_carrot,
+                R.drawable.food_cheese,
+                R.drawable.food_cherry,
+                R.drawable.food_chestnut,
+                R.drawable.food_chicken,
+                R.drawable.food_chicken_leg,
+                R.drawable.food_chinese_food,
+                R.drawable.food_chocolate,
+                R.drawable.food_coconut,
+                R.drawable.food_coffee,
+                R.drawable.food_cookie,
+                R.drawable.food_corn,
+                R.drawable.food_creme_caramel,
+                R.drawable.food_croissant,
+                R.drawable.food_cucumber,
+                R.drawable.food_donuts,
+                R.drawable.food_egg,
+                R.drawable.food_food,
+                R.drawable.food_food_1,
+                R.drawable.food_fried_egg,
+                R.drawable.food_fries,
+                R.drawable.food_grapes,
+                R.drawable.food_honey,
+                R.drawable.food_hot_dog,
+                R.drawable.food_ice_cream,
+                R.drawable.food_ice_cream_1,
+                R.drawable.food_ice_cream_2,
+                R.drawable.food_kiwi,
+                R.drawable.food_lemon,
+                R.drawable.food_lollipop,
+                R.drawable.food_meat,
+                R.drawable.food_melon,
+                R.drawable.food_milk,
+                R.drawable.food_noodles,
+                R.drawable.food_nori,
+                R.drawable.food_nori_1,
+                R.drawable.food_orange,
+                R.drawable.food_pancake,
+                R.drawable.food_pasta,
+                R.drawable.food_pasty,
+                R.drawable.food_pasty_1,
+                R.drawable.food_peach,
+                R.drawable.food_peanut,
+                R.drawable.food_pear,
+                R.drawable.food_pie,
+                R.drawable.food_pineapple,
+                R.drawable.food_pizza,
+                R.drawable.food_popcorn,
+                R.drawable.food_potato,
+                R.drawable.food_pretzel,
+                R.drawable.food_radish,
+                R.drawable.food_rice,
+                R.drawable.food_rice_1,
+                R.drawable.food_salad,
+                R.drawable.food_sandwich,
+                R.drawable.food_shrimp,
+                R.drawable.food_soup,
+                R.drawable.food_soup_1,
+                R.drawable.food_steak,
+                R.drawable.food_strawberry,
+                R.drawable.food_sushi,
+                R.drawable.food_sushi_1,
+                R.drawable.food_sushi_2,
+                R.drawable.food_taco,
+                R.drawable.food_taco_1,
+                R.drawable.food_tomato,
+                R.drawable.food_water,
+                R.drawable.food_watermelon,
         };
 
         fallingObjects = new ArrayList<FallingObject>();
@@ -157,6 +202,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                 if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
                     if (f.getX_pos_curr() == catcher.getxPos()) {
                         score += multiplier * 1;
+                        scoreMargin = (Integer.toString(score).length() - 1) * 45;
                         if (score % 20 == 0)
                             speed++;
                         iterator.remove();
@@ -166,6 +212,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
                     else if (f.getY_pos_curr() >= screenHeight) {
                         iterator.remove();
+                        lives--;
                     }
                 }
             }
@@ -179,7 +226,12 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(75);
-            canvas.drawText(Integer.toString(score), canvas.getWidth() / 2 - 20, 100, paint);
+            canvas.drawText(Integer.toString(score), canvas.getWidth() - 70 - scoreMargin, 85, paint);
+
+            // draw hearts
+            for (int i = 0; i < lives; i++) {
+                canvas.drawBitmap(life, 20 + i*90, 20, null);
+            }
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
