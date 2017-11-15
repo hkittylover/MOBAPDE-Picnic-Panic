@@ -71,6 +71,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
         // background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test);
+        /**
         background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.background_test_1), screenWidth, screenHeight, false);
         rectOverlay= new Rect();
@@ -79,10 +80,14 @@ public class GameLayout extends SurfaceView implements Runnable {
         paintOverlay.setColor(Color.BLACK);
         paintOverlay.setStyle(Paint.Style.FILL);
         paintOverlay.setAlpha(60);
-//         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
+         **/
 
-//         // scales background and crops from bottom to top
-//         background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
+        background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
+        background = new BackgroundScale(screenWidth, true).transform(background);
+
+        // scales background and crops from bottom to top
+        //background = Bitmap.createScaledBitmap(background, width, height, false);
+        background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
 
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 20 / 100;
@@ -169,9 +174,10 @@ public class GameLayout extends SurfaceView implements Runnable {
             }
             minY = screenHeight;
 
+
             // draw background
             canvas.drawBitmap(background, 0, 0, null);
-            canvas.drawRect(rectOverlay, paintOverlay);
+//          canvas.drawRect(rectOverlay, paintOverlay);
 
             // TODO draw column dividers
 
