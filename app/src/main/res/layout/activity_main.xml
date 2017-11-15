@@ -20,7 +20,7 @@
         android:elevation="0dp"
         android:text="Play"
         android:textColor="#fff"
-        android:textSize="25dp"
+        android:textSize="30dp"
         app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintLeft_toLeftOf="@+id/iv_title"
         app:layout_constraintRight_toRightOf="@+id/iv_title"

@@ -14,7 +14,7 @@ public class GameOverActivity extends AppCompatActivity {
 
     Button buttonNewGame;
     Button buttonHome;
-    TextView tvScore, tvHighscore;
+    TextView tvScore, tvHighscore, tvGameOver, tvHighscoreText, tvScoreText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,13 @@ public class GameOverActivity extends AppCompatActivity {
         tvHighscore.setText("" + highscore);
         tvScore = (TextView) findViewById(R.id.tv_score);
         tvScore.setText("" + score);
+        tvHighscoreText = (TextView) findViewById(R.id.tv_highscore_text);
+        tvScoreText = (TextView) findViewById(R.id.tv_score_text);
+        tvGameOver = (TextView) findViewById(R.id.tv_game_over);
+
+        Typeface title = Typeface.createFromAsset(getAssets(),
+                "fonts/dancing_script.ttf");
+        tvGameOver.setTypeface(title);
 
         buttonNewGame = (Button) findViewById(R.id.button_new_game);
 
@@ -67,5 +74,9 @@ public class GameOverActivity extends AppCompatActivity {
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/unica_one.ttf");
         buttonHome.setTypeface(typeface);
         buttonNewGame.setTypeface(typeface);
+        tvScore.setTypeface(typeface);
+        tvHighscore.setTypeface(typeface);
+        tvScoreText.setTypeface(typeface);
+        tvHighscoreText.setTypeface(typeface);
     }
 }

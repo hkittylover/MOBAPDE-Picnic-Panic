@@ -3,12 +3,14 @@ package edu.dlsu.mobapde.picnicpanicbeta;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -232,6 +234,9 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(75);
+            AssetManager assetManager = getContext().getAssets();
+            Typeface typeface = Typeface.createFromAsset(assetManager, "fonts/unica_one.ttf");
+            paint.setTypeface(typeface);
             canvas.drawText(Integer.toString(score), canvas.getWidth() - 70 - scoreMargin, 85, paint);
 
             // draw hearts
