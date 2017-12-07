@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_black"
+    android:layout_gravity="center"
+    android:padding="15dp"
+    android:layout_margin="50dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PAUSE"
+        android:textSize="35dp"
+        android:textColor="#FFF"
+        android:padding="5dp"
+        android:gravity="center"
+        android:id="@+id/tv_pause"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RESUME"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:textColor="#FFF"
+        android:background="@drawable/button_background"
+        android:id="@+id/button_resume"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RESTART"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:textColor="#FFF"
+        android:background="@drawable/button_background"
+        android:id="@+id/button_restart"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OPTIONS"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:textColor="#FFF"
+        android:background="@drawable/button_background"
+        android:id="@+id/button_options"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HOME"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:textColor="#FFF"
+        android:background="@drawable/button_background"
+        android:id="@+id/button_home"/>
+
+</LinearLayout>

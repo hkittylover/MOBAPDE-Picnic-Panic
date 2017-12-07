@@ -1,37 +1,52 @@
 package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 /**
  * Created by Allyza on 13/11/2017.
  */
 
-public class ActivityGame extends Activity {
+public class ActivityGame extends AppCompatActivity{
 
     GestureDetector gestureDetector;
     GameLayout gameLayout;
+    ImageView buttonPause;
 
     @Override
-    protected  void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
 
-        gameLayout = new GameLayout(this, height, width);
-        setContentView(gameLayout);
+        setContentView(R.layout.activity_game);
+
+        gameLayout = (GameLayout) findViewById(R.id.layout_game);
+
+        buttonPause = (ImageView) findViewById(R.id.button_pause);
+        buttonPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPause();
+                PauseDialog pd = new PauseDialog();
+                pd.show(getSupportFragmentManager(), "");
+
+            }
+        });
+
+
 
         gestureDetector = new GestureDetector(this, new GestureListenerHuhu());
         gameLayout.setOnTouchListener(touchListener);
-
     }
 
     @Override
@@ -44,6 +59,10 @@ public class ActivityGame extends Activity {
     protected void onResume() {
         super.onResume();
         gameLayout.resume();
+    }
+
+    public void resume(){
+        onResume();
     }
 
     /*@Override

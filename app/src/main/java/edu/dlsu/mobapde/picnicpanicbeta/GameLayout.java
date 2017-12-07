@@ -16,12 +16,16 @@ import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.SystemClock;
 import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.lang.reflect.Field;
@@ -47,6 +51,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     // Important stuff
     Thread thread = null;
     boolean canDraw = false;
+    boolean pause = false;
     Bitmap background;
     Rect rectOverlay;
     Paint paintOverlay;
@@ -68,8 +73,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     int imgHeight;
     int numCol = 3;
 
-    public GameLayout(Context context, int height, int width) {
-        super(context);
+    public GameLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
         this.context = context;
         surfaceHolder = getHolder();
@@ -93,7 +98,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         // scales background and crops from bottom to top
         //background = Bitmap.createScaledBitmap(background, width, height, false);
-        background = Bitmap.createBitmap(background, 0, background.getHeight() - height, width, height);
+        background = Bitmap.createBitmap(background, 0, background.getHeight() - screenHeight, screenWidth, screenHeight);
 
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 20 / 100;
@@ -102,7 +107,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.catcher_basket), imgWidth, imgHeight, false);
 
-        catcher = new Catcher(catcherBitmap, (width / numCol) + (width / numCol - imgWidth) / 2, height - imgHeight - screenHeight * 5 / 100, width / numCol, (width / numCol) / 2);
+        catcher = new Catcher(catcherBitmap, (screenWidth / numCol) + (screenWidth / numCol - imgWidth) / 2, screenHeight - imgHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
 
 
@@ -177,9 +182,14 @@ public class GameLayout extends SurfaceView implements Runnable {
                 } else if(r.nextInt() % 200 == 0) {
                     int num = r.nextInt();
 
+                    Drawable drawable = ContextCompat.getDrawable(context, R.drawable.bomb);
+                    Canvas temp = new Canvas();
+                    Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+                    temp.setBitmap(fall);
+                    drawable.setBounds(0, 0, imgWidth, imgHeight);
+                    drawable.draw(temp);
+
                     // Create falling object
-                    Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                            R.drawable.bomb), imgWidth, imgHeight, false);
                     FallingObject f = new Bomb(fall, colPositions[Math.abs(num % 3)], -imgHeight);
                     f.move_object(screenHeight + 1);
 
@@ -207,9 +217,10 @@ public class GameLayout extends SurfaceView implements Runnable {
                 // remove falling object from array
                 // as long as the falling object touches the catcher, it is considered as 1 pt
 
-
+                // TODO keep track of time when powerup catched then update
+                //Log.i("time", SystemClock.elapsedRealtime() + "ms");
                 if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
-                    if (f.getX_pos_curr() == catcher.getxPos()) {
+                    if (f.getX_pos_curr() == catcher.getxPos() && f.getY_pos_curr() < screenHeight - screenHeight * 5 / 100) {
                         if(f instanceof Bomb) {
                             MediaPlayer.create(getContext(),R.raw.lose).start();
                             try {
@@ -238,7 +249,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                         // if bomb, notify user
                     }
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
-                    else if (f.getY_pos_curr() >= screenHeight) {
+                    else if (f.getY_pos_curr() >= screenHeight - screenHeight * 5 / 100) {
                         iterator.remove();
                         if (!(f instanceof Bomb)) {
                             lives--;
@@ -259,12 +270,16 @@ public class GameLayout extends SurfaceView implements Runnable {
             AssetManager assetManager = getContext().getAssets();
             Typeface typeface = Typeface.createFromAsset(assetManager, "fonts/unica_one.ttf");
             paint.setTypeface(typeface);
-            canvas.drawText(Integer.toString(score), canvas.getWidth() - 70 - scoreMargin, 85, paint);
+            canvas.drawText(Integer.toString(score), (canvas.getWidth() / 2) - (scoreMargin / 2), 80, paint);
 
             // draw hearts
+            canvas.drawBitmap(life, 20 + 0, 20, null);
+            canvas.drawText("X " + Integer.toString(lives), 110, 80, paint);
+
+            /**
             for (int i = 0; i < lives; i++) {
                 canvas.drawBitmap(life, 20 + i*90, 20, null);
-            }
+            }**/
 
 
             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -274,15 +289,6 @@ public class GameLayout extends SurfaceView implements Runnable {
     public void pause() {
 
         canDraw = false;
-
-        while (true) {
-            try {
-                thread.join();
-                break;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
 
         thread = null;
 
@@ -299,6 +305,5 @@ public class GameLayout extends SurfaceView implements Runnable {
     public Catcher getCatcher() {
         return catcher;
     }
-
 
 }
