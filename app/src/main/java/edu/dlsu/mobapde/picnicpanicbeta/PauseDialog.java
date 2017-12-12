@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +24,8 @@ import android.widget.Toast;
 public class PauseDialog extends DialogFragment {
     Button buttonResume;
     Button buttonRestart;
-    Button buttonOptions;
+    ImageView buttonMusic;
+    ImageView buttonSounds;
     Button buttonHome;
     TextView tvPause;
     @NonNull
@@ -32,8 +34,11 @@ public class PauseDialog extends DialogFragment {
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.pause_layout, null);
         buttonResume = (Button) v.findViewById(R.id.button_resume);
         buttonRestart = (Button) v.findViewById(R.id.button_restart);
-        buttonOptions = (Button) v.findViewById(R.id.button_options);
         buttonHome = (Button) v.findViewById(R.id.button_home);
+        buttonMusic = (ImageView) v.findViewById(R.id.button_music);
+        buttonMusic.setTag(R.drawable.music);
+        buttonSounds = (ImageView) v.findViewById(R.id.button_sounds);
+        buttonSounds.setTag(R.drawable.sounds);
         tvPause = (TextView) v.findViewById(R.id.tv_pause);
 
         Typeface buttonTypeface = Typeface.createFromAsset(v.getContext().getAssets(), "fonts/unica_one.ttf");
@@ -41,7 +46,6 @@ public class PauseDialog extends DialogFragment {
 
         buttonResume.setTypeface(buttonTypeface);
         buttonRestart.setTypeface(buttonTypeface);
-        buttonOptions.setTypeface(buttonTypeface);
         buttonHome.setTypeface(buttonTypeface);
         tvPause.setTypeface(typeface);
 
@@ -65,11 +69,24 @@ public class PauseDialog extends DialogFragment {
             }
         });
 
-        buttonOptions.setOnClickListener(new View.OnClickListener() {
+        buttonMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // music on off
-                // sound on off
+
+            }
+        });
+
+        buttonSounds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ((Integer)buttonSounds.getTag() == R.drawable.sounds) {
+                    buttonSounds.setTag(R.drawable.sounds_no);
+                    buttonSounds.setImageResource(R.drawable.sounds_no);
+                } else {
+                    buttonSounds.setTag(R.drawable.sounds);
+                    buttonSounds.setImageResource(R.drawable.sounds);
+                }
+
             }
         });
 
