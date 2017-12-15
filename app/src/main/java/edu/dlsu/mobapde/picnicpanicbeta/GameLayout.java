@@ -52,6 +52,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     Thread thread = null;
     boolean canDraw = false;
     boolean pause = false;
+    boolean music = true;
+
     Bitmap background;
     Rect rectOverlay;
     Paint paintOverlay;
@@ -64,8 +66,10 @@ public class GameLayout extends SurfaceView implements Runnable {
     // values
     int screenWidth, screenHeight;
     int[] colPositions;
+    int speed = 15;
     ArrayList<Integer> imgIds;
     int score = 0;
+    int minY;
     int scoreMargin = 0;
     int lives = 5;
     int multiplier = 1;
@@ -135,8 +139,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     @Override
     public void run() {
-        int minY = screenHeight;
-        int speed = 15;
+        minY = screenHeight;
         while (canDraw) {
             if(lives <= 0) {
                 MediaPlayer.create(getContext(),R.raw.lose).start();
@@ -204,6 +207,10 @@ public class GameLayout extends SurfaceView implements Runnable {
             canvas.drawBitmap(background, 0, 0, null);
 //          canvas.drawRect(rectOverlay, paintOverlay);
 
+            // move bowl
+            catcher.motionCatcher();
+            canvas.drawBitmap(catcher.getImg(), catcher.getxPosCurr(), catcher.getyPosCurr(), null);
+
             // TODO draw column dividers
 
             // move falling objects
@@ -249,7 +256,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                         // if bomb, notify user
                     }
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
-                    else if (f.getY_pos_curr() >= screenHeight - screenHeight * 5 / 100) {
+                    else if (f.getY_pos_curr() > catcher.getyPosCurr() && f.getY_pos_curr() < screenHeight - ((screenHeight - f.getY_pos_curr()) / 3)) {
                         iterator.remove();
                         if (!(f instanceof Bomb)) {
                             lives--;
@@ -257,10 +264,6 @@ public class GameLayout extends SurfaceView implements Runnable {
                     }
                 }
             }
-
-            // move bowl
-            catcher.motionCatcher();
-            canvas.drawBitmap(catcher.getImg(), catcher.getxPosCurr(), catcher.getyPosCurr(), null);
 
             // update score;
             paint = new Paint();
@@ -276,12 +279,6 @@ public class GameLayout extends SurfaceView implements Runnable {
             canvas.drawBitmap(life, 20 + 0, 20, null);
             canvas.drawText("X " + Integer.toString(lives), 110, 80, paint);
 
-            /**
-            for (int i = 0; i < lives; i++) {
-                canvas.drawBitmap(life, 20 + i*90, 20, null);
-            }**/
-
-
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
@@ -295,15 +292,26 @@ public class GameLayout extends SurfaceView implements Runnable {
     }
 
     public void resume() {
-
         canDraw = true;
         thread = new Thread(this);
         thread.start();
+    }
 
+    public void togglePause() {
+        pause = !pause;
+    }
+
+    public boolean getPause() {
+        return pause;
     }
 
     public Catcher getCatcher() {
         return catcher;
+    }
+
+    @Override
+    public void onDraw(Canvas canvas){
+        super.onDraw(canvas); ///add missing super
     }
 
 }
