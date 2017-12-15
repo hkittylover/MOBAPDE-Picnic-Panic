@@ -42,7 +42,8 @@ public class ActivityGame extends AppCompatActivity{
             public void onClick(View v) {
                 onPause();
                 PauseDialog pd = new PauseDialog();
-                pd.setCancelable(false);
+                gameLayout.togglePause();
+                /////pd.setCancelable(false);
                 pd.show(getSupportFragmentManager(), "");
 
             }
@@ -58,12 +59,17 @@ public class ActivityGame extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         gameLayout.pause();
+        //gameLayout.getCanvas().save();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         gameLayout.resume();
+        if (gameLayout.getPause()) {
+            gameLayout.pause();
+            //gameLayout.invalidate();
+        }
     }
 
     @Override
@@ -79,6 +85,7 @@ public class ActivityGame extends AppCompatActivity{
     }
 
     public void resume(){
+        gameLayout.togglePause();
         onResume();
     }
 

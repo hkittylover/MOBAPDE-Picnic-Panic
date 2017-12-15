@@ -43,6 +43,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     Thread thread = null;
     boolean canDraw = false;
     boolean pause = false;
+    boolean music = true;
+
     Bitmap background;
     Rect rectOverlay;
     Paint paintOverlay;
@@ -55,9 +57,12 @@ public class GameLayout extends SurfaceView implements Runnable {
     // values
     int screenWidth, screenHeight;
     int[] colPositions;
+    /////int speed = 15;
+    /////ArrayList<Integer> imgIds;
     ArrayList<FallingObject> foods;
     ArrayList<Bomb> bombs;
     int score = 0;
+    int minY;
     int scoreMargin = 0;
     int lives = 5;
     int multiplier = 1;
@@ -220,6 +225,10 @@ public class GameLayout extends SurfaceView implements Runnable {
             // draw background
             canvas.drawBitmap(background, 0, 0, null);
 
+            // move bowl
+            catcher.motionCatcher();
+            canvas.drawBitmap(catcher.getImg(), catcher.getxPosCurr(), catcher.getyPosCurr(), null);
+
             // TODO draw column dividers
 
             // move falling objects
@@ -253,6 +262,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                         iterator.remove();
                     }
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
+
                     else if (f.getyPosCurr() >= screenHeight) {
                         iterator.remove();
                         if (!(f instanceof Bomb)) {
@@ -264,10 +274,6 @@ public class GameLayout extends SurfaceView implements Runnable {
                     }
                 }
             }
-
-            // move bowl
-            catcher.motionCatcher();
-            canvas.drawBitmap(catcher.getImg(), catcher.getxPosCurr(), catcher.getyPosCurr(), null);
 
             // update score;
             paint = new Paint();
@@ -296,15 +302,26 @@ public class GameLayout extends SurfaceView implements Runnable {
     }
 
     public void resume() {
-
         canDraw = true;
         thread = new Thread(this);
         thread.start();
+    }
 
+    public void togglePause() {
+        pause = !pause;
+    }
+
+    public boolean getPause() {
+        return pause;
     }
 
     public Catcher getCatcher() {
         return catcher;
+    }
+
+    @Override
+    public void onDraw(Canvas canvas){
+        super.onDraw(canvas); ///add missing super
     }
 
 }

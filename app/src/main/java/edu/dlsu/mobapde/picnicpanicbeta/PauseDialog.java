@@ -11,6 +11,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.IntentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,6 +34,7 @@ public class PauseDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.pause_layout, null);
+
         buttonResume = (Button) v.findViewById(R.id.button_resume);
         buttonRestart = (Button) v.findViewById(R.id.button_restart);
         buttonHome = (Button) v.findViewById(R.id.button_home);
@@ -106,9 +109,10 @@ public class PauseDialog extends DialogFragment {
         AlertDialog.Builder builder
                 = new AlertDialog.Builder(getActivity())
                 .setView(v);
+        Dialog d =  builder.create();
+        d.setCanceledOnTouchOutside(false);
 
-
-        return builder.create();
+        return d;
     }
 
 }
