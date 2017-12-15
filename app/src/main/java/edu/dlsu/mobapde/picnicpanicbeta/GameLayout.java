@@ -104,10 +104,18 @@ public class GameLayout extends SurfaceView implements Runnable {
         imgWidth = screenWidth * 20 / 100;
         imgHeight = imgWidth;
 
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_catcher_basket3);
+        Canvas temp = new Canvas();
+        Bitmap basket = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+        temp.setBitmap(basket);
+        drawable.setBounds(0, 0, imgWidth, imgHeight);
+        drawable.draw(temp);
+
         Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.catcher_basket), imgWidth, imgHeight, false);
 
-        catcher = new Catcher(catcherBitmap, (screenWidth / numCol) + (screenWidth / numCol - imgWidth) / 2, screenHeight - imgHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
+//        catcher = new Catcher(catcherBitmap, (screenWidth / numCol) + (screenWidth / numCol - imgWidth) / 2, screenHeight - imgHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
+        catcher = new Catcher(basket, (screenWidth / numCol) + (screenWidth / numCol - imgWidth) / 2, screenHeight - imgHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
         colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
 
 

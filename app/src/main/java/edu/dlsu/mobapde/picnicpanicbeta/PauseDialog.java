@@ -106,6 +106,9 @@ public class PauseDialog extends DialogFragment {
         AlertDialog.Builder builder
                 = new AlertDialog.Builder(getActivity())
                 .setView(v);
+
+
         return builder.create();
     }
+
 }

@@ -20,6 +20,9 @@ public class ActivityGame extends AppCompatActivity{
     GestureDetector gestureDetector;
     GameLayout gameLayout;
     ImageView buttonPause;
+    PauseDialog pd;
+
+    boolean hasDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,21 +35,23 @@ public class ActivityGame extends AppCompatActivity{
 
         gameLayout = (GameLayout) findViewById(R.id.layout_game);
 
+
         buttonPause = (ImageView) findViewById(R.id.button_pause);
         buttonPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onPause();
                 PauseDialog pd = new PauseDialog();
+                pd.setCancelable(false);
                 pd.show(getSupportFragmentManager(), "");
 
             }
         });
 
-
-
         gestureDetector = new GestureDetector(this, new GestureListenerHuhu());
         gameLayout.setOnTouchListener(touchListener);
+
+        hasDialog = false;
     }
 
     @Override
@@ -59,6 +64,18 @@ public class ActivityGame extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         gameLayout.resume();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Log.d("DEBUG GAME PAUSE", "if");
+        onPause();
+        PauseDialog pd = new PauseDialog();
+        pd.setCancelable(false);
+        pd.show(getSupportFragmentManager(), "");
+        hasDialog = true;
+
     }
 
     public void resume(){
