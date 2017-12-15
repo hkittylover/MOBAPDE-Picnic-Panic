@@ -83,23 +83,9 @@ public class GameLayout extends SurfaceView implements Runnable {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-        // background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test);
-        /**
-        background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.background_test_1), screenWidth, screenHeight, false);
-        rectOverlay= new Rect();
-        rectOverlay.set(0, 0, screenWidth, screenHeight);
-        paintOverlay = new Paint();
-        paintOverlay.setColor(Color.BLACK);
-        paintOverlay.setStyle(Paint.Style.FILL);
-        paintOverlay.setAlpha(60);
-         **/
-
         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_test_darker);
         background = new BackgroundScale(screenWidth, true).transform(background);
 
-        // scales background and crops from bottom to top
-        //background = Bitmap.createScaledBitmap(background, width, height, false);
         background = Bitmap.createBitmap(background, 0, background.getHeight() - screenHeight, screenWidth, screenHeight);
 
         // the image width and height will be 20% of the screen width
@@ -107,7 +93,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         imgHeight = imgWidth;
         basketWidth = screenWidth * 20 / 100;
         basketHeight = basketWidth;
-      
+
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_catcher_basket3);
         Canvas temp = new Canvas();
         Bitmap basket = Bitmap.createBitmap(basketWidth, basketHeight, Bitmap.Config.ARGB_8888);
@@ -115,10 +101,10 @@ public class GameLayout extends SurfaceView implements Runnable {
         drawable.setBounds(0, 0, basketWidth, basketHeight);
         drawable.draw(temp);
 
-        catcher = new Catcher(basket, (screenWidth / numCol) + (screenWidth / numCol - basketWidth) / 2, screenHeight - basketgHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
+        catcher = new Catcher(basket, (screenWidth / numCol) + (screenWidth / numCol - basketWidth) / 2, screenHeight - basketHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
 
         colPositions = new int[numCol];
-        for(int i = 0; i < numCol; i++) {
+        for (int i = 0; i < numCol; i++) {
             colPositions[i] = (screenWidth / numCol) * i + (screenWidth / numCol - imgWidth) / 2;
         }
 
@@ -127,7 +113,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         // get all food resources
         imgIds = new ArrayList<Integer>();
-        final Field[] fields =  R.drawable.class.getDeclaredFields();
+        final Field[] fields = R.drawable.class.getDeclaredFields();
         final R.drawable drawableResources = new R.drawable();
         for (int i = 0; i < fields.length; i++) {
             try {
@@ -149,9 +135,19 @@ public class GameLayout extends SurfaceView implements Runnable {
         int minY = screenHeight;
         int speed = 15;
         boolean gameover = false;
+        AssetManager assetManager = getContext().getAssets();
+        Typeface typeface = Typeface.createFromAsset(assetManager, "fonts/unica_one.ttf");
+        float textSize = screenWidth * 10 / 100;
+        float outbound = screenHeight - basketHeight / 2 - screenHeight * 5 / 100;
+        float scorePos = screenHeight * 625 / 10000;
+        float heartXPos = screenWidth * 27 / 1000;
+        float heartYPos = screenHeight * 16 / 1000;
+        float lifeXPos = screenWidth * 12 / 100;
+        float lifeYPos = screenHeight * 600 / 10000;
+        int speedMultiplier = screenHeight * 8 / 10000;
         while (canDraw) {
-            if(lives <= 0 || gameover) {
-                MediaPlayer.create(getContext(),R.raw.lose).start();
+            if (lives <= 0 || gameover) {
+                MediaPlayer.create(getContext(), R.raw.lose).start();
                 try {
                     Thread.sleep(4000);
                 } catch (InterruptedException e) {
@@ -161,7 +157,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                 i.setClass(getContext(), GameOverActivity.class);
                 i.putExtra("score", score);
                 getContext().startActivity(i);
-                ((Activity)getContext()).finish();
+                ((Activity) getContext()).finish();
                 break;
             }
             if (!surfaceHolder.getSurface().isValid()) {
@@ -169,14 +165,13 @@ public class GameLayout extends SurfaceView implements Runnable {
             }
             canvas = surfaceHolder.lockCanvas();
 
-            // Create falling object (chance: 1 / 8)
             Random r = new Random();
-            if (minY >= imgHeight/3) {
-                if (r.nextInt() % 20 == 0) {
+            if (minY >= imgHeight / 3) {
+                int chance = r.nextInt();
+                if (chance % 20 == 0) {
                     int num = r.nextInt();
 
                     // Create falling object
-                    // TODO
                     Drawable drawable = ContextCompat.getDrawable(context, imgIds.get(Math.abs(r.nextInt()) % imgIds.size()));
                     Canvas temp = new Canvas();
                     Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
@@ -184,17 +179,12 @@ public class GameLayout extends SurfaceView implements Runnable {
                     drawable.setBounds(0, 0, imgWidth, imgHeight);
                     drawable.draw(temp);
 
-
-                    /*
-                    Bitmap fall = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                        imgIds.get(Math.abs(r.nextInt()) % imgIds.size())), imgWidth, imgHeight, false);*/
                     int index = Math.abs(num % 3);
                     FallingObject f = new FallingObject(fall, colPositions[index], -imgHeight, index);
                     f.move_object(screenHeight + 1);
 
-                    // Add falling object to
                     fallingObjects.add(f);
-                } else if(r.nextInt() % 200 == 0) {
+                } else if (chance % 200 == 0) {
                     int num = r.nextInt();
 
                     Drawable drawable = ContextCompat.getDrawable(context, R.drawable.bomb);
@@ -215,10 +205,8 @@ public class GameLayout extends SurfaceView implements Runnable {
             }
             minY = screenHeight;
 
-
             // draw background
             canvas.drawBitmap(background, 0, 0, null);
-//          canvas.drawRect(rectOverlay, paintOverlay);
 
             // TODO draw column dividers
 
@@ -230,32 +218,23 @@ public class GameLayout extends SurfaceView implements Runnable {
                 f.motion_object(speed);
                 canvas.drawBitmap(f.getImage(), f.getX_pos_curr(), f.getY_pos_curr(), null);
                 minY = Math.min(minY, f.getY_pos_curr());
-                // remove falling object from array
-                // as long as the falling object touches the catcher, it is considered as 1 pt
 
                 // TODO keep track of time when powerup catched then update
-                //Log.i("time", SystemClock.elapsedRealtime() + "ms");
                 if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
-                    if (f.getCurr_index() == catcher.getCurr_index() && f.getY_pos_curr() < screenHeight - basketHeight/2  - screenHeight * 5 / 100) {
-                        if(f instanceof Bomb) {
+                    if (f.getCurr_index() == catcher.getCurrIndex() && f.getY_pos_curr() < outbound) {
+                        if (f instanceof Bomb) {
                             gameover = true;
                         } else {
                             sfx_collected.start();
                             score += multiplier * 1;
-                            scoreMargin = (Integer.toString(score).length() - 1) * 45;
+                            //scoreMargin = (Integer.toString(score).length() - 1) * 45;
                             if (score % 20 == 0)
                                 speed++;
                         }
                         iterator.remove();
-
-                        // play audio
-
-
-                        // TODO implement check if bomb or not
-                        // if bomb, notify user
                     }
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
-                    else if (f.getY_pos_curr() >= screenHeight - basketHeight/2 - screenHeight * 5 / 100) {
+                    else if (f.getY_pos_curr() >= screenHeight) {
                         iterator.remove();
                         if (!(f instanceof Bomb)) {
                             lives--;
@@ -272,23 +251,15 @@ public class GameLayout extends SurfaceView implements Runnable {
             paint = new Paint();
 
             paint.setColor(Color.WHITE);
-            paint.setTextSize(screenWidth * 10 / 100);
-            AssetManager assetManager = getContext().getAssets();
-            Typeface typeface = Typeface.createFromAsset(assetManager, "fonts/unica_one.ttf");
+            paint.setTextSize(textSize);
             paint.setTypeface(typeface);
-            canvas.drawText(Integer.toString(score), (canvas.getWidth() / 2) + ((paint.ascent() + paint.descent()) / 2), screenHeight * 625 / 10000, paint);
+            canvas.drawText(Integer.toString(score), (canvas.getWidth() / 2) + ((paint.ascent() + paint.descent()) / 2), scorePos, paint);
 
             // draw hearts
-            canvas.drawBitmap(life, screenWidth * 27 / 1000, screenHeight * 16 / 1000, null);
+            canvas.drawBitmap(life, heartXPos, heartYPos, null);
 
-            paint.setTextSize(screenWidth * 8 / 100);
-            canvas.drawText("X" + Integer.toString(lives), /*110*/ screenWidth * 12 / 100, screenHeight * 600 / 10000, paint);
-
-            /**
-            for (int i = 0; i < lives; i++) {
-                canvas.drawBitmap(life, 20 + i*90, 20, null);
-            }**/
-
+            paint.setTextSize(textSize);
+            canvas.drawText("X" + Integer.toString(lives), lifeXPos, lifeYPos, paint);
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }

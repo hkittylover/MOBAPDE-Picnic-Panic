@@ -9,24 +9,24 @@ import android.graphics.Bitmap;
 public class Catcher {
 
     Bitmap img;
-    int xPos, yPos;
-    int xPosCurr, yPosCurr;
-    int distance;
-    int speed;
-    int minPos, maxPos;
-    int curr_index;
+    float xPos, yPos;
+    float xPosCurr, yPosCurr;
+    float distance;
+    float speed;
+    float minPos, maxPos;
+    float currIndex;
 
-    public Catcher(Bitmap img, int xPos, int yPos, int distance, int speed) {
+    public Catcher(Bitmap img, float xPos, float yPos, float distance, float speed) {
         this.img = img;
         this.xPos = xPos;
-        this.xPosCurr = xPos;
         this.yPos = yPos;
+        this.xPosCurr = xPos;
         this.yPosCurr = yPos;
         this.distance = distance;
         this.speed = speed;
         this.minPos = xPos - distance;
         this.maxPos = xPos + distance;
-        this.curr_index = 1;
+        this.currIndex = 1;
     }
 
     public Bitmap getImg() {
@@ -37,68 +37,76 @@ public class Catcher {
         this.img = img;
     }
 
-    public int getxPos() {
+    public float getxPos() {
         return xPos;
     }
 
-    public void setxPos(int xPos) {
+    public void setxPos(float xPos) {
         this.xPos = xPos;
     }
 
-    public int getyPos() {
+    public float getyPos() {
         return yPos;
     }
 
-    public void setyPos(int yPos) {
+    public void setyPos(float yPos) {
         this.yPos = yPos;
     }
 
-    public int getxPosCurr() {
+    public float getxPosCurr() {
         return xPosCurr;
     }
 
-    public void setxPosCurr(int xPosCurr) {
+    public void setxPosCurr(float xPosCurr) {
         this.xPosCurr = xPosCurr;
     }
 
-    public int getyPosCurr() {
+    public float getyPosCurr() {
         return yPosCurr;
     }
 
-    public void setyPosCurr(int yPosCurr) {
+    public void setyPosCurr(float yPosCurr) {
         this.yPosCurr = yPosCurr;
     }
 
-    public int getDistance() {
+    public float getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
-    public int getMinPos() {
+    public float getMinPos() {
         return minPos;
     }
 
-    public void setMinPos(int minPos) {
+    public void setMinPos(float minPos) {
         this.minPos = minPos;
     }
 
-    public int getMaxPos() {
+    public float getMaxPos() {
         return maxPos;
     }
 
-    public void setMaxPos(int maxPos) {
+    public void setMaxPos(float maxPos) {
         this.maxPos = maxPos;
+    }
+
+    public float getCurrIndex() {
+        return currIndex;
+    }
+
+    public void setCurrIndex(float currIndex) {
+        this.currIndex = currIndex;
     }
 
     public static final int CATCHER_RIGHT = 0;
@@ -112,16 +120,12 @@ public class Catcher {
     public void moveCatcher(int direction) {
         if(direction == CATCHER_LEFT) {
             xPos = xPos == minPos ? minPos : xPos - distance;
-            curr_index = curr_index == 0 ? 0 : curr_index - 1;
+            currIndex = currIndex == 0 ? 0 : currIndex - 1;
         }
         if(direction == CATCHER_RIGHT) {
             xPos = xPos == maxPos ? maxPos : xPos + distance;
-            curr_index = curr_index == 2 ? 2 : curr_index + 1;
+            currIndex = currIndex == 2 ? 2 : currIndex + 1;
         }
-    }
-
-    public int getCurr_index() {
-        return curr_index;
     }
 
     /**
