@@ -11,22 +11,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.PictureDrawable;
 import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.os.SystemClock;
-import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.ImageView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -64,7 +55,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     // values
     int screenWidth, screenHeight;
     int[] colPositions;
-    ArrayList<Integer> imgIds;
+    ArrayList<FallingObject> foods;
+    ArrayList<Bomb> bombs;
     int score = 0;
     int scoreMargin = 0;
     int lives = 5;
@@ -112,17 +104,39 @@ public class GameLayout extends SurfaceView implements Runnable {
                 R.drawable.heart), screenWidth * 8 / 100, screenWidth * 8 / 100, false);
 
         // get all food resources
-        imgIds = new ArrayList<Integer>();
+        foods = new ArrayList<>();
         final Field[] fields = R.drawable.class.getDeclaredFields();
         final R.drawable drawableResources = new R.drawable();
         for (int i = 0; i < fields.length; i++) {
             try {
                 if (fields[i].getName().contains("ic_0")) {
-                    imgIds.add(fields[i].getInt(drawableResources));
+
+                    Drawable tmpD = ContextCompat.getDrawable(context, fields[i].getInt(drawableResources));
+                    Canvas tmpC = new Canvas();
+                    Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+                    tmpC.setBitmap(fall);
+                    tmpD.setBounds(0, 0, imgWidth, imgHeight);
+                    tmpD.draw(tmpC);
+
+                    FallingObject f = new FallingObject(fall, colPositions, -imgHeight);
+                    foods.add(f);
                 }
             } catch (Exception e) {
                 continue;
             }
+        }
+
+        bombs = new ArrayList<>();
+        for(int i = 0; i < screenHeight / imgHeight; i++) {
+            Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.bomb);
+            Canvas tmpC = new Canvas();
+            Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+            tmpC.setBitmap(fall);
+            tmpD.setBounds(0, 0, imgWidth, imgHeight);
+            tmpD.draw(tmpC);
+
+            Bomb f = new Bomb(fall, colPositions, -imgHeight);
+            bombs.add(f);
         }
 
         // Initialize sounds
@@ -145,6 +159,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         float lifeXPos = screenWidth * 12 / 100;
         float lifeYPos = screenHeight * 600 / 10000;
         int speedMultiplier = screenHeight * 8 / 10000;
+
         while (canDraw) {
             if (lives <= 0 || gameover) {
                 MediaPlayer.create(getContext(), R.raw.lose).start();
@@ -167,39 +182,36 @@ public class GameLayout extends SurfaceView implements Runnable {
 
             Random r = new Random();
             if (minY >= imgHeight / 3) {
-                int chance = r.nextInt();
-                if (chance % 20 == 0) {
+                if (r.nextInt() % 20 == 1) {
                     int num = r.nextInt();
 
-                    // Create falling object
-                    Drawable drawable = ContextCompat.getDrawable(context, imgIds.get(Math.abs(r.nextInt()) % imgIds.size()));
-                    Canvas temp = new Canvas();
-                    Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
-                    temp.setBitmap(fall);
-                    drawable.setBounds(0, 0, imgWidth, imgHeight);
-                    drawable.draw(temp);
+                    int obj = Math.abs(r.nextInt()) % foods.size();
 
                     int index = Math.abs(num % 3);
-                    FallingObject f = new FallingObject(fall, colPositions[index], -imgHeight, index);
+                    FallingObject f = foods.remove(obj).start(index);
                     f.move_object(screenHeight + 1);
 
                     fallingObjects.add(f);
-                } else if (chance % 200 == 0) {
+                } else if (r.nextInt() % 200 == 0) {
                     int num = r.nextInt();
 
-                    Drawable drawable = ContextCompat.getDrawable(context, R.drawable.bomb);
-                    Canvas temp = new Canvas();
-                    Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
-                    temp.setBitmap(fall);
-                    drawable.setBounds(0, 0, imgWidth, imgHeight);
-                    drawable.draw(temp);
-
-                    // Create falling object
                     int index = Math.abs(num % 3);
-                    FallingObject f = new Bomb(fall, colPositions[index], -imgHeight, index);
+                    FallingObject f = bombs.remove(0).start(index);
                     f.move_object(screenHeight + 1);
 
-                    // Add falling object to
+                    fallingObjects.add(f);
+                } else if(r.nextInt() % 1000 == 0) {
+                    int index = Math.abs(r.nextInt() % 3);
+                    Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.heart);
+                    Canvas tmpC = new Canvas();
+                    Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+                    tmpC.setBitmap(fall);
+                    tmpD.setBounds(0, 0, imgWidth, imgHeight);
+                    tmpD.draw(tmpC);
+
+                    Heart f = new Heart(fall, colPositions, -imgHeight);
+                    f.start(index);
+                    f.move_object(screenHeight + 1);
                     fallingObjects.add(f);
                 }
             }
@@ -216,28 +228,38 @@ public class GameLayout extends SurfaceView implements Runnable {
                 FallingObject f = iterator.next();
 
                 f.motion_object(speed);
-                canvas.drawBitmap(f.getImage(), f.getX_pos_curr(), f.getY_pos_curr(), null);
-                minY = Math.min(minY, f.getY_pos_curr());
+                canvas.drawBitmap(f.getImage(), f.getxPosCurr(), f.getyPosCurr(), null);
+                minY = Math.min(minY, f.getyPosCurr());
 
                 // TODO keep track of time when powerup catched then update
-                if (f.getY_pos_curr() >= catcher.getyPos() - imgHeight) {
-                    if (f.getCurr_index() == catcher.getCurrIndex() && f.getY_pos_curr() < outbound) {
+                if (f.getyPosCurr() >= catcher.getyPos() - imgHeight) {
+                    if (f.getCurrIndex() == catcher.getCurrIndex() && f.getyPosCurr() < outbound) {
                         if (f instanceof Bomb) {
                             gameover = true;
+                        } else if(f instanceof Heart) {
+                            lives++;
                         } else {
                             sfx_collected.start();
                             score += multiplier * 1;
                             //scoreMargin = (Integer.toString(score).length() - 1) * 45;
                             if (score % 20 == 0)
                                 speed++;
+
+                            if(score % 100 == 0)
+                                multiplier++;
+
+                            foods.add(f);
                         }
                         iterator.remove();
                     }
                     // if the falling object did not touch the catcher, it will just fall to the end of the screen
-                    else if (f.getY_pos_curr() >= screenHeight) {
+                    else if (f.getyPosCurr() >= screenHeight) {
                         iterator.remove();
                         if (!(f instanceof Bomb)) {
                             lives--;
+                            foods.add(f);
+                        } else {
+                            bombs.add((Bomb) f);
                         }
                     }
                 }

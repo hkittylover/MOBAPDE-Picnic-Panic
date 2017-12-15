@@ -9,17 +9,23 @@ import android.graphics.Bitmap;
 public class FallingObject {
 
     Bitmap image;
-    int x_pos, y_pos;
-    int x_pos_curr, y_pos_curr;
-    int curr_index;
+    int init;
+    int[] pos;
+    int xPos, yPos;
+    int xPosCurr, yPosCurr;
+    int currIndex;
 
-    public FallingObject(Bitmap image, int x_pos, int y_pos, int curr_index) {
+    public FallingObject(Bitmap image, int[] pos, int init) {
         this.image = image;
-        this.x_pos = x_pos;
-        this.y_pos = y_pos;
-        this.x_pos_curr = x_pos;
-        this.y_pos_curr = y_pos;
-        this.curr_index = curr_index;
+        this.pos = pos;
+        this.init = init;
+    }
+
+    public FallingObject start(int currIndex) {
+        this.xPos = this.xPosCurr = this.pos[currIndex];
+        this.yPos = this.yPosCurr = this.init;
+        this.currIndex = currIndex;
+        return this;
     }
 
     public Bitmap getImage() {
@@ -30,48 +36,48 @@ public class FallingObject {
         this.image = image;
     }
 
-    public int getX_pos() {
-        return x_pos;
+    public int getxPos() {
+        return xPos;
     }
 
-    public void setX_pos(int x_pos) {
-        this.x_pos = x_pos;
+    public void setxPos(int xPos) {
+        this.xPos = xPos;
     }
 
-    public int getY_pos() {
-        return y_pos;
+    public int getyPos() {
+        return yPos;
     }
 
-    public void setY_pos(int y_pos) {
-        this.y_pos = y_pos;
+    public void setyPos(int yPos) {
+        this.yPos = yPos;
     }
 
-    public int getX_pos_curr() {
-        return x_pos_curr;
+    public int getxPosCurr() {
+        return xPosCurr;
     }
 
-    public void setX_pos_curr(int x_pos_curr) {
-        this.x_pos_curr = x_pos_curr;
+    public void setxPosCurr(int xPosCurr) {
+        this.xPosCurr = xPosCurr;
     }
 
-    public int getY_pos_curr() {
-        return y_pos_curr;
+    public int getyPosCurr() {
+        return yPosCurr;
     }
 
-    public void setY_pos_curr(int y_pos_curr) {
-        this.y_pos_curr = y_pos_curr;
+    public void setyPosCurr(int yPosCurr) {
+        this.yPosCurr = yPosCurr;
     }
 
     public void move_object(int y_pos) {
-        setY_pos(y_pos);
+        setyPos(y_pos);
     }
 
     public void motion_object(int speed) {
-        if(y_pos_curr <= y_pos)
-            y_pos_curr += speed;
+        if (yPosCurr <= yPos)
+            yPosCurr += speed;
     }
 
-    public int getCurr_index() {
-        return curr_index;
+    public int getCurrIndex() {
+        return currIndex;
     }
 }
