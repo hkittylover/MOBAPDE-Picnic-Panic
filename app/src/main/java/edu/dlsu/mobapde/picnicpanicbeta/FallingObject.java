@@ -11,13 +11,15 @@ public class FallingObject {
     Bitmap image;
     int x_pos, y_pos;
     int x_pos_curr, y_pos_curr;
+    int curr_index;
 
-    public FallingObject(Bitmap image, int x_pos, int y_pos) {
+    public FallingObject(Bitmap image, int x_pos, int y_pos, int curr_index) {
         this.image = image;
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.x_pos_curr = x_pos;
         this.y_pos_curr = y_pos;
+        this.curr_index = curr_index;
     }
 
     public Bitmap getImage() {
@@ -67,5 +69,9 @@ public class FallingObject {
     public void motion_object(int speed) {
         if(y_pos_curr <= y_pos)
             y_pos_curr += speed;
+    }
+
+    public int getCurr_index() {
+        return curr_index;
     }
 }

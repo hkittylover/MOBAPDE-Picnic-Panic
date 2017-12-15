@@ -14,6 +14,7 @@ public class Catcher {
     int distance;
     int speed;
     int minPos, maxPos;
+    int curr_index;
 
     public Catcher(Bitmap img, int xPos, int yPos, int distance, int speed) {
         this.img = img;
@@ -25,6 +26,7 @@ public class Catcher {
         this.speed = speed;
         this.minPos = xPos - distance;
         this.maxPos = xPos + distance;
+        this.curr_index = 1;
     }
 
     public Bitmap getImg() {
@@ -110,10 +112,16 @@ public class Catcher {
     public void moveCatcher(int direction) {
         if(direction == CATCHER_LEFT) {
             xPos = xPos == minPos ? minPos : xPos - distance;
+            curr_index = curr_index == 0 ? 0 : curr_index - 1;
         }
         if(direction == CATCHER_RIGHT) {
             xPos = xPos == maxPos ? maxPos : xPos + distance;
+            curr_index = curr_index == 2 ? 2 : curr_index + 1;
         }
+    }
+
+    public int getCurr_index() {
+        return curr_index;
     }
 
     /**
@@ -122,8 +130,12 @@ public class Catcher {
     public void motionCatcher() {
         if(xPos > xPosCurr) {
             xPosCurr += speed;
+            if(xPos < xPosCurr)
+                xPosCurr = xPos;
         } else if(xPos < xPosCurr) {
             xPosCurr -= speed;
+            if(xPos > xPosCurr)
+                xPosCurr = xPos;
         }
     }
 
