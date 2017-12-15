@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="edu.dlsu.mobapde.picnicpanicbeta.GameOverActivity"
-    android:background="@drawable/background_test_darker">
+    android:background="@drawable/background_test_darker"
+    android:id="@+id/rl_gameover">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:id="@+id/ll_highscore">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,6 +31,28 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_alignParentEnd="true"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textColor="#fff"
+            android:textSize="20dp"
+            android:id="@+id/tv_coin_total"/>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/coins"
+            android:paddingStart="5dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical"
         android:gravity="center">
@@ -39,12 +63,13 @@
             android:textSize="75dp"
             android:layout_margin="10dp"
             android:id="@+id/tv_game_over"
-            android:textColor="#fff"/>
+            android:textColor="#fff"
+            android:gravity="center"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="10dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,6 +84,33 @@
                 android:textSize="30dp"
                 android:textColor="#fff"
                 android:id="@+id/tv_score"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ "
+                android:textSize="15dp"
+                android:textColor="#fff"
+                android:id="@+id/tv_coin_text"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100"
+                android:textSize="15dp"
+                android:id="@+id/tv_coin"
+                android:textColor="#fff"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/coins"
+                android:paddingStart="5dp"/>
         </LinearLayout>
 
         <Button

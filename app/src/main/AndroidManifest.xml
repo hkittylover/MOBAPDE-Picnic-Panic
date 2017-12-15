@@ -8,6 +8,7 @@
         android:label="Picnic Panic"
         android:roundIcon="@drawable/logo_round"
         android:supportsRtl="true"
+        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">

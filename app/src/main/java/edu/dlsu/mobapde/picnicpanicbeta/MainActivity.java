@@ -37,4 +37,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onBackPressed() {
+        ExitDialog ex = new ExitDialog();
+        ex.show(getSupportFragmentManager(), "");
+    }
 }
