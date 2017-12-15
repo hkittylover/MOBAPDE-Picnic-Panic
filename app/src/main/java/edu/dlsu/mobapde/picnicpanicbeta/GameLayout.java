@@ -173,11 +173,8 @@ public class GameLayout extends SurfaceView implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Intent i = new Intent();
-                i.setClass(getContext(), GameOverActivity.class);
-                i.putExtra("score", score);
-                getContext().startActivity(i);
-                ((Activity) getContext()).finish();
+                ((ActivityGame)context).saveMe(score);
+
                 break;
             }
             if (!surfaceHolder.getSurface().isValid()) {
@@ -245,6 +242,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     if (f.getCurrIndex() == catcher.getCurrIndex() && f.getyPosCurr() < outbound) {
                         if (f instanceof Bomb) {
                             gameover = true;
+                            bombs.add((Bomb) f);
                         } else if(f instanceof Heart) {
                             lives++;
                         } else {
@@ -265,11 +263,11 @@ public class GameLayout extends SurfaceView implements Runnable {
 
                     else if (f.getyPosCurr() >= screenHeight) {
                         iterator.remove();
-                        if (!(f instanceof Bomb)) {
+                        if(f instanceof Bomb){
+                            bombs.add((Bomb) f);
+                        } else if (!(f instanceof Heart)) {
                             lives--;
                             foods.add(f);
-                        } else {
-                            bombs.add((Bomb) f);
                         }
                     }
                 }
@@ -309,6 +307,10 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     public void togglePause() {
         pause = !pause;
+    }
+
+    public void saved(){
+        lives = 3;
     }
 
     public boolean getPause() {

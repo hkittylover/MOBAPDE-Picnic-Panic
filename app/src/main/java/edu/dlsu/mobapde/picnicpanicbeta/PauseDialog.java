@@ -50,7 +50,7 @@ public class PauseDialog extends DialogFragment {
         buttonResume.setTypeface(buttonTypeface);
         buttonRestart.setTypeface(buttonTypeface);
         buttonHome.setTypeface(buttonTypeface);
-        tvPause.setTypeface(typeface);
+        tvPause.setTypeface(buttonTypeface);
 
         buttonResume.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:text="PAUSE"
         android:textSize="35dp"
-        android:textColor="#FFF"
+        android:textColor="#443e32"
+        android:textStyle="bold"
         android:padding="5dp"
         android:gravity="center"
         android:id="@+id/tv_pause"/>
@@ -31,7 +32,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:text="RESTART"
+        android:text="NEW GAME"
         android:textSize="20dp"
         android:layout_gravity="center"
         android:layout_margin="5dp"

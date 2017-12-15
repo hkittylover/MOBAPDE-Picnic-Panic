@@ -2,7 +2,9 @@ package edu.dlsu.mobapde.picnicpanicbeta;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -23,6 +25,7 @@ public class ActivityGame extends AppCompatActivity{
     PauseDialog pd;
 
     boolean hasDialog;
+    SharedPreferences dsp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,7 @@ public class ActivityGame extends AppCompatActivity{
                 onPause();
                 PauseDialog pd = new PauseDialog();
                 gameLayout.togglePause();
-                /////pd.setCancelable(false);
+                pd.setCancelable(false);
                 pd.show(getSupportFragmentManager(), "");
 
             }
@@ -53,6 +56,29 @@ public class ActivityGame extends AppCompatActivity{
         gameLayout.setOnTouchListener(touchListener);
 
         hasDialog = false;
+    }
+
+    public void saveMe(int score) {
+        dsp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        int coinTotal = dsp.getInt("coinTotal", 0);
+        if(coinTotal >= SaveMeDialog.COIN_NEED) {
+            onPause();
+            SaveMeDialog pd = new SaveMeDialog();
+            Bundle b=new Bundle();
+            b.putInt("coinTotal", coinTotal);
+            b.putInt("score", score);
+            pd.setArguments(b);
+            gameLayout.togglePause();
+            pd.setCancelable(false);
+            pd.show(getSupportFragmentManager(), "");
+        } else {
+            Intent i = new Intent();
+            i.setClass(this, GameOverActivity.class);
+            i.putExtra("score", score);
+            startActivity(i);
+            finish();
+        }
     }
 
     @Override
@@ -86,6 +112,16 @@ public class ActivityGame extends AppCompatActivity{
 
     public void resume(){
         gameLayout.togglePause();
+        onResume();
+    }
+
+    public void saved() {
+        dsp = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor dspEditor = dsp.edit();
+        dspEditor.putInt("coinTotal", dsp.getInt("coinTotal", 0) - SaveMeDialog.COIN_NEED);
+        dspEditor.commit();
+        gameLayout.togglePause();
+        gameLayout.saved();
         onResume();
     }
 

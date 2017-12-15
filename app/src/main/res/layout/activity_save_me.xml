@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
+    android:layout_gravity="center"
+    android:padding="15dp"
+    android:layout_margin="50dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wallet: "
+            android:textColor="#443e32"
+            android:id="@+id/tv_wallet"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textColor="#443e32"
+            android:id="@+id/tv_coin_total"/>
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/coins"
+            android:paddingStart="5dp"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SAVE ME FOR"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textColor="#443e32"
+        android:padding="5dp"
+        android:gravity="center"
+        android:id="@+id/tv_save_me"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:layout_marginEnd="15dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textColor="#443e32"
+            android:textSize="20dp"
+            android:id="@+id/tv_coin_need"/>
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/coins"
+            android:paddingStart="5dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:text="YES"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:textColor="#FFF"
+            android:background="@drawable/button_background"
+            android:id="@+id/button_yes"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:text="NO"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:textColor="#FFF"
+            android:background="@drawable/button_background"
+            android:id="@+id/button_no"/>
+    </LinearLayout>
+</LinearLayout>
