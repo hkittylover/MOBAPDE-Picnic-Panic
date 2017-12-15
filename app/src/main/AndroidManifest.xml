@@ -25,7 +25,6 @@
         <activity
             android:name=".GameOverActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SaveMeDialog"></activity>
     </application>
 
 </manifest>

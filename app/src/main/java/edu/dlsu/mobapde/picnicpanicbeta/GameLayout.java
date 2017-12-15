@@ -38,6 +38,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     // Sfx
     MediaPlayer sfx_collected;
+    MediaPlayer sfx_music;
 
     // Important stuff
     Thread thread = null;
@@ -71,6 +72,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     int basketWidth;
     int basketHeight;
     int numCol = 3;
+    boolean gameover = false;
 
     public GameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -145,7 +147,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         }
 
         // Initialize sounds
-        sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin);
+        sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin1);
         fallingObjects = new ArrayList<FallingObject>();
     }
 
@@ -153,7 +155,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     public void run() {
         int minY = screenHeight;
         int speed = 15;
-        boolean gameover = false;
+        gameover = false;
         AssetManager assetManager = getContext().getAssets();
         Typeface typeface = Typeface.createFromAsset(assetManager, "fonts/unica_one.ttf");
         float textSize = screenWidth * 10 / 100;
@@ -165,9 +167,13 @@ public class GameLayout extends SurfaceView implements Runnable {
         float lifeYPos = screenHeight * 600 / 10000;
         int speedMultiplier = screenHeight * 8 / 10000;
 
+        sfx_music = MediaPlayer.create(getContext(), R.raw.entertainer);
+        sfx_music.setLooping(true);
+        sfx_music.start();
         while (canDraw) {
             if (lives <= 0 || gameover) {
-                MediaPlayer.create(getContext(), R.raw.lose).start();
+                MediaPlayer.create(getContext(), R.raw.lose1).start();
+                sfx_music.stop();
                 try {
                     Thread.sleep(4000);
                 } catch (InterruptedException e) {
@@ -183,8 +189,9 @@ public class GameLayout extends SurfaceView implements Runnable {
             canvas = surfaceHolder.lockCanvas();
 
             Random r = new Random();
-            if (minY >= imgHeight / 3) {
-                if (r.nextInt() % 20 == 1) {
+            if (minY >= imgHeight * 3 / 4) {
+                int chance = Math.abs(r.nextInt() % 500);
+                if (chance < 50) {
                     int num = r.nextInt();
 
                     int obj = Math.abs(r.nextInt()) % foods.size();
@@ -194,7 +201,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     f.move_object(screenHeight + 1);
 
                     fallingObjects.add(f);
-                } else if (r.nextInt() % 200 == 0) {
+                } else if (chance >= 495) {
                     int num = r.nextInt();
 
                     int index = Math.abs(num % 3);
@@ -202,7 +209,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     f.move_object(screenHeight + 1);
 
                     fallingObjects.add(f);
-                } else if(r.nextInt() % 1000 == 0) {
+                } else if(chance >= 300 && chance < 302) {
                     int index = Math.abs(r.nextInt() % 3);
                     Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.heart);
                     Canvas tmpC = new Canvas();
@@ -311,6 +318,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     public void saved(){
         lives = 3;
+        gameover = false;
     }
 
     public boolean getPause() {
