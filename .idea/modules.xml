@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mobapdev4.iml" filepath="$PROJECT_DIR$/mobapdev4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MOBAPDE.iml" filepath="$PROJECT_DIR$/MOBAPDE.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MOBAPDE-Picnic-Panic-Beta.iml" filepath="$PROJECT_DIR$/MOBAPDE-Picnic-Panic-Beta.iml" />
     </modules>
   </component>
 </project>

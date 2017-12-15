@@ -105,21 +105,22 @@ public class GameLayout extends SurfaceView implements Runnable {
         // the image width and height will be 20% of the screen width
         imgWidth = screenWidth * 17 / 100;
         imgHeight = imgWidth;
-
         basketWidth = screenWidth * 20 / 100;
         basketHeight = basketWidth;
+      
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_catcher_basket3);
+        Canvas temp = new Canvas();
+        Bitmap basket = Bitmap.createBitmap(basketWidth, basketHeight, Bitmap.Config.ARGB_8888);
+        temp.setBitmap(basket);
+        drawable.setBounds(0, 0, basketWidth, basketHeight);
+        drawable.draw(temp);
 
-        Bitmap catcherBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.catcher_basket), basketWidth, basketHeight, false);
+        catcher = new Catcher(basket, (screenWidth / numCol) + (screenWidth / numCol - basketWidth) / 2, screenHeight - basketgHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
 
-        catcher = new Catcher(catcherBitmap, (screenWidth / numCol) + (screenWidth / numCol - basketWidth) / 2, screenHeight - basketHeight - screenHeight * 5 / 100, screenWidth / numCol, (screenWidth / numCol) / 2);
-        //colPositions = new int[]{catcher.getMinPos(), catcher.getxPos(), catcher.getMaxPos()};
-        //////
         colPositions = new int[numCol];
         for(int i = 0; i < numCol; i++) {
             colPositions[i] = (screenWidth / numCol) * i + (screenWidth / numCol - imgWidth) / 2;
         }
-
 
         life = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
                 R.drawable.heart), screenWidth * 8 / 100, screenWidth * 8 / 100, false);
