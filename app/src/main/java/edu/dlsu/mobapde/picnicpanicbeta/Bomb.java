@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 
 public class Bomb extends FallingObject {
 
-    public Bomb(Bitmap image, int x_pos, int y_pos) {
-        super(image, x_pos, y_pos);
+    public Bomb(Bitmap image, int x_pos, int y_pos, int curr_index) {
+        super(image, x_pos, y_pos, curr_index);
     }
 }
