@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class SaveMeDialog extends DialogFragment {
-    public static int COIN_NEED = 40;
+    public static int COIN_NEED = 100;
     Button buttonYes, buttonNo;
     TextView tvWallet, tvCoinTotal, tvSaveMe, tvCoinNeed;
     int coinTotal, score;

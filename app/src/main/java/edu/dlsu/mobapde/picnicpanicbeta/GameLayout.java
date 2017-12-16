@@ -188,7 +188,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         while (canDraw) {
             if (lives <= 0 || gameover) {
                 MediaPlayer.create(getContext(), R.raw.lose1).start();
-                sfx_music.stop();
+                sfx_music.pause();
                 try {
                     Thread.sleep(4000);
                 } catch (InterruptedException e) {
@@ -281,9 +281,6 @@ public class GameLayout extends SurfaceView implements Runnable {
                             if (score % 20 == 0)
                                 speed++;
 
-                            if(score % 100 == 0)
-                                multiplier++;
-
                             foods.add(f);
                         }
                         iterator.remove();
@@ -339,13 +336,15 @@ public class GameLayout extends SurfaceView implements Runnable {
         if(sfx_music != null);
             if(pause)
                 sfx_music.pause();
-            else
+            else if(!sfx_music.isPlaying())
                 sfx_music.start();
     }
 
     public void saved(){
         lives = 3;
         gameover = false;
+        if(!sfx_music.isPlaying())
+            sfx_music.start();
     }
 
     public boolean getPause() {
