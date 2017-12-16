@@ -40,6 +40,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     List<FallingObject> fallingObjects;
     // Sfx
     MediaPlayer sfx_collected;
+    MediaPlayer sfx_life;
+    MediaPlayer sfx_miss;
     // Important stuff
     Thread thread = null;
     boolean canDraw = false;
@@ -164,6 +166,8 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         // Initialize sounds
         sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin1);
+        sfx_life = MediaPlayer.create(context, R.raw.life);
+        sfx_miss = MediaPlayer.create(context, R.raw.miss2);
         fallingObjects = new ArrayList<FallingObject>();
 
         SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -289,7 +293,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                         } else if (f instanceof Heart) {
                             lives++;
                             if (sounds) {
-                                sfx_collected.start();
+                                sfx_life.start();
                             }
                         } else {
                             if (sounds) {
@@ -313,6 +317,9 @@ public class GameLayout extends SurfaceView implements Runnable {
                         } else if (!(f instanceof Heart)) {
                             lives--;
                             foods.add(f);
+                            if (sounds) {
+                                sfx_miss.start();
+                            }
                         }
                     }
                 }

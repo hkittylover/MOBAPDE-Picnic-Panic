@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.Calendar;
 
@@ -23,9 +24,16 @@ public class MainActivity extends AppCompatActivity {
     AlarmManager alarmMgr;
     PendingIntent alarmIntent;
 
+    TextView tvHSLabel;
+    TextView tvHS;
+    TextView tvCoinAmt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+
 
         boolean start = dsp.getBoolean("start", false);
         if(!start) {
@@ -60,9 +68,21 @@ public class MainActivity extends AppCompatActivity {
         Log.i("ALARMMMMYA", "" + alarmMgr.getNextAlarmClock());
         Log.i("ALARMMMMY", "" + Calendar.getInstance().getTimeInMillis());
 
+        tvHSLabel = (TextView) findViewById(R.id.tv_hs_label);
+        tvHS = (TextView) findViewById(R.id.tv_hs);
+        tvCoinAmt = (TextView) findViewById(R.id.tv_coin_amt);
         buttonStart = (Button) findViewById(R.id.button_start);
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/unica_one.ttf");
         buttonStart.setTypeface(typeface);
+
+        tvHS.setTypeface(typeface);
+        tvHSLabel.setTypeface(typeface);
+        tvCoinAmt.setTypeface(typeface);
+
+
+        tvHS.setText("" + dsp.getInt("highscore", -1));
+        tvCoinAmt.setText("" + dsp.getInt("coinTotal", 0));
+
 
         buttonStart.setOnClickListener(new View.OnClickListener() {
 
