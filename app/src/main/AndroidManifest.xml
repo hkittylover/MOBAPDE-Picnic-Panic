@@ -26,6 +26,10 @@
             android:name=".GameOverActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".StoryActivity"></activity>
+        <receiver
+            android:name=".NotificationReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

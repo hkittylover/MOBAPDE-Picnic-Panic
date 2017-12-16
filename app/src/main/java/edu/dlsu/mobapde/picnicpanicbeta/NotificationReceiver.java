@@ -19,11 +19,11 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent repeatingIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, repeatingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, repeatingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.logo)
-                .setContentTitle("I am Panicking")
-                .setContentText("We miss you so much!")
+                .setContentTitle("Play Picnic Panic")
+                .setContentText("We missed you so much!")
                 .setContentIntent(pendingIntent);
 
         notificationManager.notify(0, builder.build());

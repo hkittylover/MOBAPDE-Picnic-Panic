@@ -85,6 +85,7 @@ public class ActivityGame extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
+
         gameLayout.pause();
         //gameLayout.getCanvas().save();
     }

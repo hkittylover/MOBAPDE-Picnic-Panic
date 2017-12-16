@@ -43,20 +43,22 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//        alarmMgr = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-//        Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
-//        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
-//
-//        // Set the alarm to start at 8:30 a.m.
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(System.currentTimeMillis());
-//        calendar.set(Calendar.HOUR_OF_DAY, 11);
-//        calendar.set(Calendar.MINUTE, 0);
-//
-//        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-//                1000 * 60 * 20, alarmIntent);
-//        Log.i("ALARMMMMY", "" + alarmMgr.getNextAlarmClock());
-//        Log.i("ALARMMMMY", "" + Calendar.getInstance().getTimeInMillis());
+        alarmMgr = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+
+        // Set the alarm to start at 8:30 a.m.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 13);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
+        Log.i("ALARMMMMYA", "" + alarmMgr.getNextAlarmClock());
+        Log.i("ALARMMMMY", "" + Calendar.getInstance().getTimeInMillis());
 
         buttonStart = (Button) findViewById(R.id.button_start);
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/unica_one.ttf");

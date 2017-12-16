@@ -220,7 +220,7 @@ public class GameLayout extends SurfaceView implements Runnable {
             Random r = new Random();
             if (minY >= imgHeight) {
                 int chance = Math.abs(r.nextInt() % 500);
-                if (chance < 50) {
+                if (chance < 55) {
                     int num = r.nextInt();
 
                     int obj = Math.abs(r.nextInt()) % foods.size();
@@ -297,7 +297,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                             }
                             score += multiplier * 1;
                             //scoreMargin = (Integer.toString(score).length() - 1) * 45;
-                            if (score % 10 == 0)
+                            if (score % 15 == 0)
                                 speed++;
 
                             foods.add(f);
@@ -412,6 +412,8 @@ public class GameLayout extends SurfaceView implements Runnable {
     public Catcher getCatcher() {
         return catcher;
     }
+
+
 
     @Override
     public void onDraw(Canvas canvas) {
