@@ -100,13 +100,14 @@ public class PauseDialog extends DialogFragment {
                 if ((Integer)buttonMusic.getTag() == R.drawable.music) {
                     buttonMusic.setTag(R.drawable.music_no);
                     buttonMusic.setImageResource(R.drawable.music_no);
-                    music = false;
+                    ((ActivityGame)getActivity()).pauseMusic();
                 } else {
                     buttonMusic.setTag(R.drawable.music);
                     buttonMusic.setImageResource(R.drawable.music);
                     music = true;
+                    ((ActivityGame)getActivity()).resumeMusic();
                 }
-                ((ActivityGame)getActivity()).setMusic(music);
+
             }
         });
 

@@ -138,6 +138,22 @@ public class ActivityGame extends AppCompatActivity{
         dspEditor.commit();
     }
 
+    public void pauseMusic(){
+        dsp = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor dspEditor = dsp.edit();
+        dspEditor.putBoolean("music", false);
+        dspEditor.commit();
+        gameLayout.pauseMusic();
+    }
+
+    public void resumeMusic(){
+        dsp = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor dspEditor = dsp.edit();
+        dspEditor.putBoolean("music", true);
+        dspEditor.commit();
+        gameLayout.resumeMusic();
+    }
+
     public boolean getMusic() {
         SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         boolean music = dsp.getBoolean("music", true);
