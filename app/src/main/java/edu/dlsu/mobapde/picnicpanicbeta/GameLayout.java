@@ -3,6 +3,7 @@ package edu.dlsu.mobapde.picnicpanicbeta;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,8 +15,10 @@ import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -44,7 +47,9 @@ public class GameLayout extends SurfaceView implements Runnable {
     Thread thread = null;
     boolean canDraw = false;
     boolean pause = false;
-    boolean music = true;
+    boolean music;
+    boolean sounds;
+    boolean musicStart = false;
 
     Bitmap background;
     Rect rectOverlay;
@@ -149,6 +154,10 @@ public class GameLayout extends SurfaceView implements Runnable {
         // Initialize sounds
         sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin1);
         fallingObjects = new ArrayList<FallingObject>();
+
+        SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        music = dsp.getBoolean("music", true);
+        sounds = dsp.getBoolean("sounds", true);
     }
 
     @Override
@@ -167,19 +176,28 @@ public class GameLayout extends SurfaceView implements Runnable {
         float lifeYPos = screenHeight * 600 / 10000;
         int speedMultiplier = screenHeight * 8 / 10000;
 
-        sfx_music = MediaPlayer.create(getContext(), R.raw.entertainer);
-        sfx_music.setLooping(true);
-        sfx_music.start();
+
+        if (music && !musicStart) {
+            sfx_music = MediaPlayer.create(getContext(), R.raw.entertainer);
+            sfx_music.setLooping(true);
+            sfx_music.start();
+            musicStart = true;
+        }
         while (canDraw) {
             if (lives <= 0 || gameover) {
-                MediaPlayer.create(getContext(), R.raw.lose1).start();
-                sfx_music.stop();
+                if (sounds) {
+                    MediaPlayer.create(getContext(), R.raw.lose1).start();
+                }
+                if (musicStart) {
+                    sfx_music.stop();
+                }
                 try {
                     Thread.sleep(4000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                ((ActivityGame)context).saveMe(score);
+                (
+                        (ActivityGame)context).saveMe(score);
 
                 break;
             }
@@ -253,7 +271,9 @@ public class GameLayout extends SurfaceView implements Runnable {
                         } else if(f instanceof Heart) {
                             lives++;
                         } else {
-                            sfx_collected.start();
+                            if (sounds) {
+                                sfx_collected.start();
+                            }
                             score += multiplier * 1;
                             //scoreMargin = (Integer.toString(score).length() - 1) * 45;
                             if (score % 20 == 0)
@@ -306,6 +326,13 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     }
 
+    public void endMusic() {
+        if (music && musicStart) {
+            sfx_music.stop();
+            musicStart = false;
+        }
+    }
+
     public void resume() {
         canDraw = true;
         thread = new Thread(this);
@@ -319,6 +346,24 @@ public class GameLayout extends SurfaceView implements Runnable {
     public void saved(){
         lives = 3;
         gameover = false;
+    }
+
+    public void setMusic(boolean music) {
+        if (!musicStart && music) {
+            sfx_music = MediaPlayer.create(getContext(), R.raw.entertainer);
+            sfx_music.setLooping(true);
+            sfx_music.start();
+            musicStart = true;
+        }
+        this.music = music;
+        if (!music && musicStart) {
+            sfx_music.stop();
+            musicStart = false;
+        }
+    }
+
+    public void setSounds(boolean sounds) {
+        this.sounds = sounds;
     }
 
     public boolean getPause() {
