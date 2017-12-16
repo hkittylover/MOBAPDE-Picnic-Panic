@@ -41,7 +41,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     // Sfx
     MediaPlayer sfx_collected;
-    MediaPlayer sfx_music;
+    public static MediaPlayer sfx_music = null;
 
     // Important stuff
     Thread thread = null;
@@ -67,6 +67,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     /////ArrayList<Integer> imgIds;
     ArrayList<FallingObject> foods;
     ArrayList<Bomb> bombs;
+    ArrayList<Bitmap> bombBitmaps;
     int score = 0;
     int minY;
     int scoreMargin = 0;
@@ -117,6 +118,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         // get all food resources
         foods = new ArrayList<>();
+        bombBitmaps = new ArrayList<>();
         final Field[] fields = R.drawable.class.getDeclaredFields();
         final R.drawable drawableResources = new R.drawable();
         for (int i = 0; i < fields.length; i++) {
@@ -133,6 +135,18 @@ public class GameLayout extends SurfaceView implements Runnable {
                     FallingObject f = new FallingObject(fall, colPositions, -imgHeight);
                     foods.add(f);
                 }
+                if(fields[i].getName().contains("ic_bomb")) {
+
+                    Drawable d = ContextCompat.getDrawable(context, fields[i].getInt(drawableResources));
+                    Canvas c = new Canvas();
+                    Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+                    c.setBitmap(fall);
+                    d.setBounds(0, 0, imgWidth, imgHeight);
+                    d.draw(c);
+
+                    bombBitmaps.add(fall);
+
+                }
             } catch (Exception e) {
                 continue;
             }
@@ -140,14 +154,14 @@ public class GameLayout extends SurfaceView implements Runnable {
 
         bombs = new ArrayList<>();
         for(int i = 0; i < screenHeight / imgHeight; i++) {
-            Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.bomb);
+            Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.ic_bomb_00);
             Canvas tmpC = new Canvas();
             Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
             tmpC.setBitmap(fall);
             tmpD.setBounds(0, 0, imgWidth, imgHeight);
             tmpD.draw(tmpC);
 
-            Bomb f = new Bomb(fall, colPositions, -imgHeight);
+            Bomb f = new Bomb(fall, colPositions, -imgHeight, bombBitmaps.size());
             bombs.add(f);
         }
 
@@ -158,6 +172,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getContext());
         music = dsp.getBoolean("music", true);
         sounds = dsp.getBoolean("sounds", true);
+
     }
 
     @Override
@@ -175,6 +190,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         float lifeXPos = screenWidth * 12 / 100;
         float lifeYPos = screenHeight * 600 / 10000;
         int speedMultiplier = screenHeight * 8 / 10000;
+
 
 
         if (music && !musicStart) {
@@ -259,6 +275,13 @@ public class GameLayout extends SurfaceView implements Runnable {
                 FallingObject f = iterator.next();
 
                 f.motion_object(speed);
+                if(f instanceof Bomb) {
+                    ((Bomb) f).incEllapsedFrames();
+
+                    if(((Bomb)f).getEllapsedFrames() == 2) {
+                        ((Bomb)f).setImageB(bombBitmaps.get(((Bomb) f).getBombState()));
+                    }
+                }
                 canvas.drawBitmap(f.getImage(), f.getxPosCurr(), f.getyPosCurr(), null);
                 minY = Math.min(minY, f.getyPosCurr());
 
@@ -278,9 +301,6 @@ public class GameLayout extends SurfaceView implements Runnable {
                             //scoreMargin = (Integer.toString(score).length() - 1) * 45;
                             if (score % 20 == 0)
                                 speed++;
-
-                            if(score % 100 == 0)
-                                multiplier++;
 
                             foods.add(f);
                         }
@@ -340,12 +360,19 @@ public class GameLayout extends SurfaceView implements Runnable {
     }
 
     public void togglePause() {
-        pause = !pause;
+//         pause = !pause;
+//         if(sfx_music != null);
+//             if(pause)
+//                 sfx_music.pause();
+//             else if(!sfx_music.isPlaying())
+//                 sfx_music.start();
     }
 
     public void saved(){
         lives = 3;
         gameover = false;
+//         if(!sfx_music.isPlaying())
+//             sfx_music.start();
     }
 
     public void setMusic(boolean music) {
