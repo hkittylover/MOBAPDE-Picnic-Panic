@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.IntentCompat;
@@ -30,6 +31,8 @@ public class PauseDialog extends DialogFragment {
     ImageView buttonSounds;
     Button buttonHome;
     TextView tvPause;
+    Boolean sounds;
+    Boolean music;
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -39,9 +42,27 @@ public class PauseDialog extends DialogFragment {
         buttonRestart = (Button) v.findViewById(R.id.button_restart);
         buttonHome = (Button) v.findViewById(R.id.button_home);
         buttonMusic = (ImageView) v.findViewById(R.id.button_music);
-        buttonMusic.setTag(R.drawable.music);
+        if (((ActivityGame)getActivity()).getMusic()) {
+            buttonMusic.setImageResource(R.drawable.music);
+            buttonMusic.setTag(R.drawable.music);
+            music = true;
+        } else {
+            buttonMusic.setTag(R.drawable.music_no);
+            buttonMusic.setImageResource(R.drawable.music_no);
+            music = false;
+        }
+
         buttonSounds = (ImageView) v.findViewById(R.id.button_sounds);
-        buttonSounds.setTag(R.drawable.sounds);
+        if (((ActivityGame)getActivity()).getSounds()) {
+            buttonSounds.setImageResource(R.drawable.sounds);
+            buttonSounds.setTag(R.drawable.sounds);
+            sounds = true;
+        } else {
+            buttonSounds.setImageResource(R.drawable.sounds_no);
+            buttonSounds.setTag(R.drawable.sounds_no);
+            sounds = false;
+        }
+
         tvPause = (TextView) v.findViewById(R.id.tv_pause);
 
         Typeface buttonTypeface = Typeface.createFromAsset(v.getContext().getAssets(), "fonts/unica_one.ttf");
@@ -68,6 +89,7 @@ public class PauseDialog extends DialogFragment {
                         | Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intents);
+                ((ActivityGame)getActivity()).endMusic();
                 dismiss();
             }
         });
@@ -75,7 +97,16 @@ public class PauseDialog extends DialogFragment {
         buttonMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if ((Integer)buttonMusic.getTag() == R.drawable.music) {
+                    buttonMusic.setTag(R.drawable.music_no);
+                    buttonMusic.setImageResource(R.drawable.music_no);
+                    music = false;
+                } else {
+                    buttonMusic.setTag(R.drawable.music);
+                    buttonMusic.setImageResource(R.drawable.music);
+                    music = true;
+                }
+                ((ActivityGame)getActivity()).setMusic(music);
             }
         });
 
@@ -85,11 +116,13 @@ public class PauseDialog extends DialogFragment {
                 if ((Integer)buttonSounds.getTag() == R.drawable.sounds) {
                     buttonSounds.setTag(R.drawable.sounds_no);
                     buttonSounds.setImageResource(R.drawable.sounds_no);
+                    sounds = false;
                 } else {
                     buttonSounds.setTag(R.drawable.sounds);
                     buttonSounds.setImageResource(R.drawable.sounds);
+                    sounds = true;
                 }
-
+                ((ActivityGame)getActivity()).setSounds(sounds);
             }
         });
 
@@ -102,6 +135,7 @@ public class PauseDialog extends DialogFragment {
                         | Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intents);
+                ((ActivityGame)getActivity()).endMusic();
                 dismiss();
             }
         });

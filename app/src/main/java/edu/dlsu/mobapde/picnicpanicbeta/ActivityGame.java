@@ -91,6 +91,8 @@ public class ActivityGame extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
+        gameLayout.setSounds(getSounds());
+        gameLayout.setMusic(getMusic());
         gameLayout.resume();
         if (gameLayout.getPause()) {
             gameLayout.pause();
@@ -110,6 +112,10 @@ public class ActivityGame extends AppCompatActivity{
 
     }
 
+    public void endMusic() {
+        gameLayout.endMusic();
+    }
+
     public void resume(){
         gameLayout.togglePause();
         onResume();
@@ -123,6 +129,32 @@ public class ActivityGame extends AppCompatActivity{
         gameLayout.togglePause();
         gameLayout.saved();
         onResume();
+    }
+
+    public void setMusic(boolean music) {
+        dsp = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor dspEditor = dsp.edit();
+        dspEditor.putBoolean("music", music);
+        dspEditor.commit();
+    }
+
+    public boolean getMusic() {
+        SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean music = dsp.getBoolean("music", true);
+        return music;
+    }
+
+    public void setSounds(boolean sounds) {
+        dsp = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor dspEditor = dsp.edit();
+        dspEditor.putBoolean("sounds", sounds);
+        dspEditor.commit();
+    }
+
+    public boolean getSounds() {
+        SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean sounds = dsp.getBoolean("sounds", true);
+        return sounds;
     }
 
     /*@Override
