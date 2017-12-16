@@ -89,7 +89,7 @@ public class PauseDialog extends DialogFragment {
                         | Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intents);
-                ((ActivityGame)getActivity()).endMusic();
+                ((ActivityGame)getActivity()).stopMusic();
                 dismiss();
             }
         });
@@ -136,7 +136,7 @@ public class PauseDialog extends DialogFragment {
                         | Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intents);
-                ((ActivityGame)getActivity()).endMusic();
+                ((ActivityGame)getActivity()).stopMusic();
                 dismiss();
             }
         });

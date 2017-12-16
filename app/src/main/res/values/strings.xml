@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="title_activity_save_me_dialog">SaveMeDialog</string>
+    <string name="quot">"</string>
 </resources>

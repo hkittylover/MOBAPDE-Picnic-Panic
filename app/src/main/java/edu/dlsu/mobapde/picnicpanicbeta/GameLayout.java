@@ -33,16 +33,13 @@ import java.util.Random;
  */
 public class GameLayout extends SurfaceView implements Runnable {
 
+    public static MediaPlayer sfx_music = null;
     // Catcher
     Catcher catcher;
-
     // falling objects
     List<FallingObject> fallingObjects;
-
     // Sfx
     MediaPlayer sfx_collected;
-    public static MediaPlayer sfx_music = null;
-
     // Important stuff
     Thread thread = null;
     boolean canDraw = false;
@@ -135,7 +132,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     FallingObject f = new FallingObject(fall, colPositions, -imgHeight);
                     foods.add(f);
                 }
-                if(fields[i].getName().contains("ic_bomb")) {
+                if (fields[i].getName().contains("ic_bomb")) {
 
                     Drawable d = ContextCompat.getDrawable(context, fields[i].getInt(drawableResources));
                     Canvas c = new Canvas();
@@ -153,7 +150,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         }
 
         bombs = new ArrayList<>();
-        for(int i = 0; i < screenHeight / imgHeight; i++) {
+        for (int i = 0; i < screenHeight / imgHeight; i++) {
             Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.ic_bomb_00);
             Canvas tmpC = new Canvas();
             Bitmap fall = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
@@ -194,7 +191,6 @@ public class GameLayout extends SurfaceView implements Runnable {
         int speedMultiplier = screenHeight * 8 / 10000;
 
 
-
         if (music) {
             resumeMusic();
         } else {
@@ -212,7 +208,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     e.printStackTrace();
                 }
                 (
-                        (ActivityGame)context).saveMe(score);
+                        (ActivityGame) context).saveMe(score);
 
                 break;
             }
@@ -242,7 +238,7 @@ public class GameLayout extends SurfaceView implements Runnable {
                     f.move_object(screenHeight + 1);
 
                     fallingObjects.add(f);
-                } else if(chance >= 300 && chance < 303) {
+                } else if (chance >= 300 && chance < 303) {
                     int index = Math.abs(r.nextInt() % 3);
                     Drawable tmpD = ContextCompat.getDrawable(context, R.drawable.heart);
                     Canvas tmpC = new Canvas();
@@ -274,11 +270,11 @@ public class GameLayout extends SurfaceView implements Runnable {
                 FallingObject f = iterator.next();
 
                 f.motion_object(speed);
-                if(f instanceof Bomb) {
+                if (f instanceof Bomb) {
                     ((Bomb) f).incEllapsedFrames();
 
-                    if(((Bomb)f).getEllapsedFrames() == 2) {
-                        ((Bomb)f).setImageB(bombBitmaps.get(((Bomb) f).getBombState()));
+                    if (((Bomb) f).getEllapsedFrames() == 2) {
+                        ((Bomb) f).setImageB(bombBitmaps.get(((Bomb) f).getBombState()));
                     }
                 }
                 canvas.drawBitmap(f.getImage(), f.getxPosCurr(), f.getyPosCurr(), null);
@@ -290,15 +286,18 @@ public class GameLayout extends SurfaceView implements Runnable {
                         if (f instanceof Bomb) {
                             gameover = true;
                             bombs.add((Bomb) f);
-                        } else if(f instanceof Heart) {
+                        } else if (f instanceof Heart) {
                             lives++;
+                            if (sounds) {
+                                sfx_collected.start();
+                            }
                         } else {
                             if (sounds) {
                                 sfx_collected.start();
                             }
                             score += multiplier * 1;
                             //scoreMargin = (Integer.toString(score).length() - 1) * 45;
-                            if (score % 20 == 0)
+                            if (score % 10 == 0)
                                 speed++;
 
                             foods.add(f);
@@ -309,7 +308,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
                     else if (f.getyPosCurr() >= screenHeight) {
                         iterator.remove();
-                        if(f instanceof Bomb){
+                        if (f instanceof Bomb) {
                             bombs.add((Bomb) f);
                         } else if (!(f instanceof Heart)) {
                             lives--;
@@ -359,7 +358,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     }
 
     public void togglePause() {
-//         pause = !pause;
+        pause = !pause;
 //         if(sfx_music != null);
 //             if(pause)
 //                 sfx_music.pause();
@@ -367,7 +366,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 //                 sfx_music.start();
     }
 
-    public void saved(){
+    public void saved() {
         lives = 3;
         gameover = false;
 //         if(!sfx_music.isPlaying())
@@ -383,7 +382,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         }
         this.music = music;
         if (!music && musicStart) {
-            sfx_music.stop();
+//            sfx_music.stop();
             musicStart = false;
         }
     }
@@ -393,13 +392,17 @@ public class GameLayout extends SurfaceView implements Runnable {
     }
 
     public void pauseMusic() {
-        if(sfx_music.isPlaying())
+        if (sfx_music.isPlaying())
             sfx_music.pause();
     }
 
     public void resumeMusic() {
-        if(!sfx_music.isPlaying())
+        if (!sfx_music.isPlaying())
             sfx_music.start();
+    }
+
+    public void stopMusic() {
+        sfx_music.stop();
     }
 
     public boolean getPause() {
@@ -411,7 +414,7 @@ public class GameLayout extends SurfaceView implements Runnable {
     }
 
     @Override
-    public void onDraw(Canvas canvas){
+    public void onDraw(Canvas canvas) {
         super.onDraw(canvas); ///add missing super
     }
 

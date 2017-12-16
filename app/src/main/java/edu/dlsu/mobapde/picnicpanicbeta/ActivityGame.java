@@ -73,6 +73,7 @@ public class ActivityGame extends AppCompatActivity{
             pd.setCancelable(false);
             pd.show(getSupportFragmentManager(), "");
         } else {
+            stopMusic();
             Intent i = new Intent();
             i.setClass(this, GameOverActivity.class);
             i.putExtra("score", score);
@@ -171,6 +172,10 @@ public class ActivityGame extends AppCompatActivity{
         SharedPreferences dsp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         boolean sounds = dsp.getBoolean("sounds", true);
         return sounds;
+    }
+
+    public void stopMusic() {
+        gameLayout.stopMusic();
     }
 
     /*@Override
