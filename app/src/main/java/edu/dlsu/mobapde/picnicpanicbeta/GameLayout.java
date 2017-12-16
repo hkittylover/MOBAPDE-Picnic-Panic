@@ -38,7 +38,7 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     // Sfx
     MediaPlayer sfx_collected;
-    MediaPlayer sfx_music;
+    public static MediaPlayer sfx_music = null;
 
     // Important stuff
     Thread thread = null;
@@ -149,6 +149,9 @@ public class GameLayout extends SurfaceView implements Runnable {
         // Initialize sounds
         sfx_collected = MediaPlayer.create(context, R.raw.sfx_coin1);
         fallingObjects = new ArrayList<FallingObject>();
+        sfx_music = MediaPlayer.create(getContext(), R.raw.entertainer);
+        sfx_music.setLooping(true);
+        sfx_music.start();
     }
 
     @Override
@@ -167,9 +170,7 @@ public class GameLayout extends SurfaceView implements Runnable {
         float lifeYPos = screenHeight * 600 / 10000;
         int speedMultiplier = screenHeight * 8 / 10000;
 
-        sfx_music = MediaPlayer.create(getContext(), R.raw.entertainer);
-        sfx_music.setLooping(true);
-        sfx_music.start();
+
         while (canDraw) {
             if (lives <= 0 || gameover) {
                 MediaPlayer.create(getContext(), R.raw.lose1).start();
@@ -314,6 +315,11 @@ public class GameLayout extends SurfaceView implements Runnable {
 
     public void togglePause() {
         pause = !pause;
+        if(sfx_music != null);
+            if(pause)
+                sfx_music.pause();
+            else
+                sfx_music.start();
     }
 
     public void saved(){
